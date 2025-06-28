@@ -39,25 +39,6 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const sidebarVariants = {
-    expanded: { width: "280px" },
-    collapsed: { width: "60px" }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (index: number) => ({
-      opacity: 1,
-      x: 0,
-      transition: {
-        delay: index * 0.1,
-        type: "spring",
-        stiffness: 300,
-        damping: 25
-      }
-    })
-  };
-
   return (
     <Sidebar 
       className="border-r border-border/50 bg-card/50 backdrop-blur-sm"
@@ -92,10 +73,17 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
               {navigationItems.map((item, index) => (
                 <SidebarMenuItem key={item.id}>
                   <motion.div
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    custom={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      x: 0,
+                      transition: {
+                        delay: index * 0.1,
+                        type: "spring" as const,
+                        stiffness: 300,
+                        damping: 25
+                      }
+                    }}
                   >
                     <SidebarMenuButton
                       onClick={() => onSectionChange(item.id)}
@@ -114,7 +102,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                       <motion.div
                         whileHover={{ scale: 1.1, rotate: 5 }}
                         whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        transition={{ type: "spring" as const, stiffness: 400, damping: 10 }}
                       >
                         <item.icon className="w-5 h-5 shrink-0" />
                       </motion.div>
@@ -137,7 +125,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                         <motion.div
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          transition={{ type: "spring" as const, stiffness: 400, damping: 10 }}
                         >
                           <ChevronRight className="w-4 h-4 text-primary" />
                         </motion.div>
