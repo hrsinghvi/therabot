@@ -42,8 +42,7 @@ const Index = () => {
     hidden: { opacity: 0, y: -50 },
     visible: { 
       opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
+      y: 0
     }
   };
 
@@ -64,6 +63,7 @@ const Index = () => {
           variants={headerVariants}
           initial="hidden"
           animate="visible"
+          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
         >
           <motion.div 
             className="flex items-center gap-3"
@@ -79,7 +79,7 @@ const Index = () => {
               transition={{ 
                 duration: 4,
                 repeat: Infinity,
-                ease: [0.4, 0, 0.6, 1]
+                ease: "easeInOut"
               }}
             >
               <Heart className="w-6 h-6 text-primary" />
