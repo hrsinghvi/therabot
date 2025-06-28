@@ -1,6 +1,6 @@
-
 import { useState, useRef, useEffect } from "react";
-import { Mic, MicOff, ArrowLeft, Volume2, VolumeX, Play, Pause } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mic, MicOff, ArrowLeft, Volume2, VolumeX, Play, Pause, Waves } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -103,11 +103,46 @@ const VoiceSession = ({ onBack }: VoiceSessionProps) => {
     }
   };
 
+  const pulseVariants = {
+    listening: {
+      scale: [1, 1.2, 1],
+      opacity: [0.7, 1, 0.7],
+      transition: {
+        duration: 1.5,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    },
+    idle: {
+      scale: 1,
+      opacity: 1
+    }
+  };
+
+  const waveVariants = {
+    animate: {
+      scale: [1, 1.5, 2],
+      opacity: [0.8, 0.4, 0],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-secondary/30 p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8 pt-4">
+    <div className="h-[calc(100vh-200px)] bg-card/20 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden">
+      {/* Header */}
+      <motion.div 
+        className="flex items-center justify-between p-4 border-b border-border/50"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <motion.div
+          whileHover={{ x: -5 }}
+          whileTap={{ scale: 0.95 }}
+        >
           <Button
             variant="ghost"
             onClick={onBack}
@@ -116,7 +151,22 @@ const VoiceSession = ({ onBack }: VoiceSessionProps) => {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
+        </motion.div>
+        
+        <div className="flex items-center gap-2">
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          >
+            <Waves className="w-5 h-5 text-primary" />
+          </motion.div>
           <h1 className="text-xl font-medium">Voice Session</h1>
+        </div>
+        
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -125,101 +175,164 @@ const VoiceSession = ({ onBack }: VoiceSessionProps) => {
           >
             {volume ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
           </Button>
-        </div>
+        </motion.div>
+      </motion.div>
 
+      <div className="p-8 flex flex-col items-center justify-center h-full space-y-8">
         {/* Voice Interface */}
-        <div className="text-center mb-8">
-          <div className="relative inline-block">
+        <div className="relative">
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <Button
               size="lg"
               className={`w-32 h-32 rounded-full transition-all duration-300 ${
                 isListening 
-                  ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                  ? 'bg-red-500 hover:bg-red-600' 
                   : 'bg-primary hover:bg-primary/90'
               }`}
-              onClick={isListening ? stopListening : startListening}
+              onClick={isListening ? () => setIsListening(false) : () => setIsListening(true)}
               disabled={isProcessing}
             >
-              {isListening ? (
-                <MicOff className="w-12 h-12" />
-              ) : (
-                <Mic className="w-12 h-12" />
-              )}
+              <motion.div
+                variants={pulseVariants}
+                animate={isListening ? 'listening' : 'idle'}
+              >
+                {isListening ? (
+                  <MicOff className="w-12 h-12" />
+                ) : (
+                  <Mic className="w-12 h-12" />
+                )}
+              </motion.div>
             </Button>
-            
-            {isListening && (
-              <div className="absolute inset-0 w-32 h-32 border-4 border-red-400 rounded-full animate-ping"></div>
-            )}
-          </div>
+          </motion.div>
           
-          <p className="mt-4 text-lg text-muted-foreground">
-            {isListening 
-              ? "I'm listening... Tap to stop" 
-              : isProcessing 
-                ? "Processing your message..." 
-                : "Tap to start speaking"
-            }
-          </p>
+          {/* Animated Waves */}
+          <AnimatePresence>
+            {isListening && (
+              <>
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute inset-0 w-32 h-32 border-2 border-red-400 rounded-full"
+                    variants={waveVariants}
+                    initial={{ scale: 1, opacity: 0 }}
+                    animate="animate"
+                    style={{ animationDelay: `${i * 0.5}s` }}
+                  />
+                ))}
+              </>
+            )}
+          </AnimatePresence>
         </div>
+        
+        <motion.p 
+          className="text-lg text-muted-foreground text-center max-w-md"
+          animate={{ opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          {isListening 
+            ? "I'm listening... Speak naturally about what's on your mind" 
+            : isProcessing 
+              ? "Processing your message with care..." 
+              : "Tap the microphone to start your voice session"
+          }
+        </motion.p>
 
         {/* Transcript */}
-        {transcript && (
-          <Card className="mb-6 border-0 bg-accent/20">
-            <CardContent className="p-6">
-              <h3 className="font-medium mb-2 text-sm text-muted-foreground">You said:</h3>
-              <p className="text-foreground">{transcript}</p>
-            </CardContent>
-          </Card>
-        )}
+        <AnimatePresence>
+          {transcript && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-2xl"
+            >
+              <Card className="border-0 bg-accent/20 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-medium mb-2 text-sm text-muted-foreground">You said:</h3>
+                  <p className="text-foreground">{transcript}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* AI Response */}
-        {aiResponse && (
-          <Card className="mb-6 border-0 bg-primary/10">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium text-sm text-muted-foreground">CalmMind responds:</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleSpeech}
-                  className="gap-2"
-                >
-                  {isSpeaking ? (
-                    <>
-                      <Pause className="w-4 h-4" />
-                      Pause
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4" />
-                      Play
-                    </>
-                  )}
-                </Button>
-              </div>
-              <p className="text-foreground leading-relaxed">{aiResponse}</p>
-            </CardContent>
-          </Card>
-        )}
+        <AnimatePresence>
+          {aiResponse && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="w-full max-w-2xl"
+            >
+              <Card className="border-0 bg-primary/10 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-sm text-muted-foreground">CalmMind responds:</h3>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {}}
+                        className="gap-2"
+                      >
+                        {isSpeaking ? (
+                          <>
+                            <Pause className="w-4 h-4" />
+                            Pause
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4" />
+                            Play
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+                  </div>
+                  <p className="text-foreground leading-relaxed">{aiResponse}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Processing Animation */}
-        {isProcessing && (
-          <div className="text-center">
-            <div className="inline-flex gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-            </div>
-            <p className="mt-2 text-muted-foreground">Thinking...</p>
-          </div>
-        )}
-
-        {/* Instructions */}
-        <div className="mt-8 p-4 bg-muted/50 rounded-lg">
-          <p className="text-sm text-muted-foreground text-center">
-            💡 Speak naturally about whatever is on your mind. I'm here to listen without judgment and offer gentle guidance.
-          </p>
-        </div>
+        <AnimatePresence>
+          {isProcessing && (
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="inline-flex gap-2">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-3 h-3 bg-primary rounded-full"
+                    animate={{
+                      y: [0, -12, 0],
+                      opacity: [0.4, 1, 0.4]
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      delay: i * 0.2
+                    }}
+                  />
+                ))}
+              </div>
+              <p className="mt-2 text-muted-foreground">Thinking with empathy...</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

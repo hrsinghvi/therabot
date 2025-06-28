@@ -1,9 +1,11 @@
 
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Send, Mic } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Send, Mic, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { generateTherapeuticResponse } from "@/services/gemini";
 
 interface TextChatProps {
   onBack: () => void;
@@ -14,6 +16,8 @@ interface Message {
   type: 'user' | 'ai';
   content: string;
   timestamp: Date;
+  emotionalTone?: 'supportive' | 'empathetic' | 'encouraging' | 'grounding';
+  suggestedActions?: string[];
 }
 
 const TextChat = ({ onBack }: TextChatProps) => {
@@ -21,12 +25,14 @@ const TextChat = ({ onBack }: TextChatProps) => {
     {
       id: '1',
       type: 'ai',
-      content: "Hello, I'm here to listen and support you. Feel free to share whatever is on your mind - whether it's something that happened today, how you're feeling, or anything else you'd like to talk about. This is your safe space.",
-      timestamp: new Date()
+      content: "Hello, I'm CalmMind, your AI therapy companion. I'm here to listen and support you through whatever you're experiencing. Feel free to share what's on your mind - this is your safe space.",
+      timestamp: new Date(),
+      emotionalTone: 'supportive'
     }
   ]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationHistory, setConversationHistory] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,21 +43,6 @@ const TextChat = ({ onBack }: TextChatProps) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  const generateAIResponse = (userMessage: string): string => {
-    const responses = [
-      "I hear you. What you're experiencing sounds really challenging. Can you tell me more about how this is affecting you?",
-      "Thank you for sharing that with me. It takes courage to express these feelings. What would help you feel more supported right now?",
-      "It sounds like you're carrying a lot. I want you to know that your feelings are completely valid. Have you been able to talk to anyone else about this?",
-      "I can sense the emotion behind your words. Sometimes when we're going through difficult times, it helps to focus on small steps. What's one thing that might bring you a moment of peace today?",
-      "What you're describing resonates with many people, and you're definitely not alone in feeling this way. How long have you been experiencing these feelings?",
-      "I appreciate you trusting me with this. It sounds like you're being really hard on yourself. What would you say to a friend who was going through the same thing?",
-      "Those feelings you're describing are so human and understandable. When you think about this situation, what feels most overwhelming about it?",
-      "I'm glad you're taking the time to reflect on this. Self-awareness like yours is actually a strength. What do you think your emotions are trying to tell you?",
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
 
   const sendMessage = async () => {
     if (!currentMessage.trim()) return;
@@ -67,18 +58,37 @@ const TextChat = ({ onBack }: TextChatProps) => {
     setCurrentMessage("");
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    setTimeout(() => {
-      const aiResponse: Message = {
+    // Update conversation history
+    const newHistory = [...conversationHistory, userMessage.content];
+    setConversationHistory(newHistory);
+
+    try {
+      const response = await generateTherapeuticResponse(userMessage.content, newHistory);
+      
+      const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: generateAIResponse(userMessage.content),
-        timestamp: new Date()
+        content: response.content,
+        timestamp: new Date(),
+        emotionalTone: response.emotionalTone,
+        suggestedActions: response.suggestedActions
       };
       
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages(prev => [...prev, aiMessage]);
+      setConversationHistory(prev => [...prev, response.content]);
+    } catch (error) {
+      console.error('Error generating response:', error);
+      const fallbackMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: "I'm having trouble connecting right now, but I want you to know that I'm here for you. Your feelings are valid and important.",
+        timestamp: new Date(),
+        emotionalTone: 'supportive'
+      };
+      setMessages(prev => [...prev, fallbackMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500 + Math.random() * 1000);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -88,11 +98,37 @@ const TextChat = ({ onBack }: TextChatProps) => {
     }
   };
 
+  const getEmotionalToneColor = (tone?: string) => {
+    switch (tone) {
+      case 'empathetic': return 'border-l-blue-500';
+      case 'encouraging': return 'border-l-green-500';
+      case 'grounding': return 'border-l-purple-500';
+      default: return 'border-l-primary';
+    }
+  };
+
+  const messageVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { type: "spring", stiffness: 300, damping: 25 }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-secondary/30 flex flex-col">
-      <div className="max-w-4xl mx-auto flex flex-col h-screen w-full">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border/50">
+    <div className="h-[calc(100vh-200px)] flex flex-col bg-card/20 backdrop-blur-sm rounded-lg border border-border/50">
+      {/* Header */}
+      <motion.div 
+        className="flex items-center justify-between p-4 border-b border-border/50"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <motion.div
+          whileHover={{ x: -5 }}
+          whileTap={{ scale: 0.95 }}
+        >
           <Button
             variant="ghost"
             onClick={onBack}
@@ -101,28 +137,72 @@ const TextChat = ({ onBack }: TextChatProps) => {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          <h1 className="text-xl font-medium">Text Conversation</h1>
-          <div className="w-16"></div>
+        </motion.div>
+        
+        <div className="flex items-center gap-2">
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          >
+            <Sparkles className="w-5 h-5 text-primary" />
+          </motion.div>
+          <h1 className="text-xl font-medium">AI Therapy Chat</h1>
         </div>
+        
+        <div className="w-16"></div>
+      </motion.div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <AnimatePresence>
           {messages.map((message) => (
-            <div
+            <motion.div
               key={message.id}
+              variants={messageVariants}
+              initial="hidden"
+              animate="visible"
               className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <Card
                 className={`max-w-[80%] border-0 ${
                   message.type === 'user'
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-card/70'
+                    : `bg-card/70 border-l-4 ${getEmotionalToneColor(message.emotionalTone)}`
                 }`}
               >
                 <CardContent className="p-4">
-                  <p className="whitespace-pre-wrap leading-relaxed">
+                  <motion.p 
+                    className="whitespace-pre-wrap leading-relaxed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
                     {message.content}
-                  </p>
+                  </motion.p>
+                  
+                  {message.suggestedActions && message.suggestedActions.length > 0 && (
+                    <motion.div 
+                      className="mt-3 space-y-2"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <p className="text-xs text-muted-foreground">Suggested actions:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {message.suggestedActions.map((action, index) => (
+                          <motion.span
+                            key={index}
+                            className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {action}
+                          </motion.span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                  
                   <div className={`text-xs mt-2 opacity-70 ${
                     message.type === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
                   }`}>
@@ -130,58 +210,86 @@ const TextChat = ({ onBack }: TextChatProps) => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           ))}
+        </AnimatePresence>
 
-          {/* Typing Indicator */}
+        {/* Typing Indicator */}
+        <AnimatePresence>
           {isTyping && (
-            <div className="flex justify-start">
+            <motion.div 
+              className="flex justify-start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
               <Card className="bg-card/70 border-0">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-2 h-2 bg-primary rounded-full"
+                          animate={{
+                            y: [0, -8, 0],
+                            opacity: [0.4, 1, 0.4]
+                          }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            delay: i * 0.2
+                          }}
+                        />
+                      ))}
                     </div>
-                    <span className="text-sm text-muted-foreground">CalmMind is typing...</span>
+                    <span className="text-sm text-muted-foreground">CalmMind is thinking...</span>
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           )}
-          
-          <div ref={messagesEndRef} />
-        </div>
+        </AnimatePresence>
+        
+        <div ref={messagesEndRef} />
+      </div>
 
-        {/* Input */}
-        <div className="p-4 border-t border-border/50 bg-background/80 backdrop-blur">
-          <div className="flex gap-3 items-end">
-            <div className="flex-1">
-              <Textarea
-                ref={textareaRef}
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Share what's on your mind..."
-                className="min-h-12 max-h-32 resize-none border-0 bg-card/50 focus:bg-card"
-                rows={1}
-              />
-            </div>
+      {/* Input */}
+      <motion.div 
+        className="p-4 border-t border-border/50 bg-background/80 backdrop-blur"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="flex gap-3 items-end">
+          <div className="flex-1">
+            <Textarea
+              ref={textareaRef}
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Share what's on your mind..."
+              className="min-h-12 max-h-32 resize-none border-0 bg-card/50 focus:bg-card transition-colors"
+              rows={1}
+            />
+          </div>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <Button
               onClick={sendMessage}
               disabled={!currentMessage.trim() || isTyping}
-              className="bg-primary hover:bg-primary/90 px-4 py-3"
+              className="bg-primary hover:bg-primary/90 px-4 py-3 transition-colors"
             >
               <Send className="w-4 h-4" />
             </Button>
-          </div>
-          
-          <div className="mt-2 text-xs text-muted-foreground text-center">
-            💡 Press Enter to send, Shift+Enter for new line
-          </div>
+          </motion.div>
         </div>
-      </div>
+        
+        <div className="mt-2 text-xs text-muted-foreground text-center">
+          💡 Press Enter to send, Shift+Enter for new line
+        </div>
+      </motion.div>
     </div>
   );
 };
