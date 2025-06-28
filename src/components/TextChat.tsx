@@ -1,14 +1,13 @@
-
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Send, Mic, Sparkles } from "lucide-react";
+import { Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { generateTherapeuticResponse } from "@/services/gemini";
 
 interface TextChatProps {
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 interface Message {
@@ -112,33 +111,18 @@ const TextChat = ({ onBack }: TextChatProps) => {
     visible: { 
       opacity: 1, 
       y: 0, 
-      scale: 1,
-      transition: { type: "spring" as const, stiffness: 300, damping: 25 }
+      scale: 1
     }
   };
 
   return (
-    <div className="h-[calc(100vh-200px)] flex flex-col bg-card/20 backdrop-blur-sm rounded-lg border border-border/50">
+    <div className="h-[calc(100vh-180px)] flex flex-col bg-card/20 backdrop-blur-sm rounded-lg border border-border/50">
       {/* Header */}
       <motion.div 
-        className="flex items-center justify-between p-4 border-b border-border/50"
+        className="flex items-center justify-center p-4 border-b border-border/50"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <motion.div
-          whileHover={{ x: -5 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            className="gap-2 hover:bg-accent/50"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Button>
-        </motion.div>
-        
         <div className="flex items-center gap-2">
           <motion.div
             animate={{ rotate: [0, 360] }}
@@ -148,8 +132,6 @@ const TextChat = ({ onBack }: TextChatProps) => {
           </motion.div>
           <h1 className="text-xl font-medium">AI Therapy Chat</h1>
         </div>
-        
-        <div className="w-16"></div>
       </motion.div>
 
       {/* Messages */}
@@ -161,6 +143,7 @@ const TextChat = ({ onBack }: TextChatProps) => {
               variants={messageVariants}
               initial="hidden"
               animate="visible"
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <Card
