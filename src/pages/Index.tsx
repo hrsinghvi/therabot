@@ -43,7 +43,7 @@ const Index = () => {
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
     }
   };
 
@@ -79,7 +79,7 @@ const Index = () => {
               transition={{ 
                 duration: 4,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: [0.4, 0, 0.6, 1]
               }}
             >
               <Heart className="w-6 h-6 text-primary" />

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, ArrowLeft, Volume2, VolumeX, Play, Pause, Waves } from "lucide-react";
@@ -110,7 +111,7 @@ const VoiceSession = ({ onBack }: VoiceSessionProps) => {
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: [0.4, 0, 0.6, 1] as const
       }
     },
     idle: {
@@ -126,7 +127,7 @@ const VoiceSession = ({ onBack }: VoiceSessionProps) => {
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeOut"
+        ease: [0.4, 0, 0.6, 1] as const
       }
     }
   };
