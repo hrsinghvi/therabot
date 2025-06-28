@@ -1,15 +1,26 @@
 
 import { motion } from "framer-motion";
-import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Palette, Shield } from "lucide-react";
+import { Moon, Sun, Palette, Shield } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SettingsPanel = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   const settingsVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -27,42 +38,6 @@ const SettingsPanel = () => {
     hidden: { opacity: 0, x: -20 },
     visible: { opacity: 1, x: 0 }
   };
-
-  const settingsItems = [
-    {
-      icon: darkMode ? Sun : Moon,
-      title: "Dark Mode",
-      description: "Toggle between light and dark themes",
-      action: (
-        <Switch
-          checked={darkMode}
-          onCheckedChange={setDarkMode}
-        />
-      )
-    },
-    {
-      icon: soundEnabled ? Volume2 : VolumeX,
-      title: "Sound Effects",
-      description: "Enable or disable audio feedback",
-      action: (
-        <Switch
-          checked={soundEnabled}
-          onCheckedChange={setSoundEnabled}
-        />
-      )
-    },
-    {
-      icon: notificationsEnabled ? Bell : BellOff,
-      title: "Daily Reminders",
-      description: "Get gentle reminders for check-ins",
-      action: (
-        <Switch
-          checked={notificationsEnabled}
-          onCheckedChange={setNotificationsEnabled}
-        />
-      )
-    }
-  ];
 
   return (
     <motion.div
@@ -86,28 +61,32 @@ const SettingsPanel = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {settingsItems.map((item, index) => (
-              <motion.div
-                key={item.title}
-                variants={itemVariants}
-                whileHover={{ x: 5 }}
-                className="flex items-center justify-between p-4 rounded-lg hover:bg-accent/20 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <motion.div
-                    whileHover={{ scale: 1.2, rotate: 10 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
-                    <item.icon className="w-5 h-5 text-primary" />
-                  </motion.div>
-                  <div>
-                    <h3 className="font-medium">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
-                  </div>
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ x: 5 }}
+              className="flex items-center justify-between p-4 rounded-lg hover:bg-accent/20 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <motion.div
+                  whileHover={{ scale: 1.2, rotate: 10 }}
+                  transition={{ type: "spring" as const, stiffness: 400 }}
+                >
+                  {darkMode ? (
+                    <Sun className="w-5 h-5 text-primary" />
+                  ) : (
+                    <Moon className="w-5 h-5 text-primary" />
+                  )}
+                </motion.div>
+                <div>
+                  <h3 className="font-medium">Dark Mode</h3>
+                  <p className="text-sm text-muted-foreground">Toggle between light and dark themes</p>
                 </div>
-                {item.action}
-              </motion.div>
-            ))}
+              </div>
+              <Switch
+                checked={darkMode}
+                onCheckedChange={setDarkMode}
+              />
+            </motion.div>
           </CardContent>
         </Card>
       </motion.div>

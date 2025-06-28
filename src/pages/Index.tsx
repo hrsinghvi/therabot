@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Heart, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -11,6 +10,7 @@ import MoodDashboard from "@/components/MoodDashboard";
 import TextChat from "@/components/TextChat";
 import SettingsPanel from "@/components/SettingsPanel";
 import DashboardHome from "@/components/DashboardHome";
+import { Moon, Sun } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -61,7 +61,7 @@ const Index = () => {
             animate="visible"
             transition={{ duration: 0.3 }}
           >
-            <VoiceSession onBack={() => setActiveSection('dashboard')} />
+            <VoiceSession />
           </motion.div>
         );
       case 'chat':
@@ -70,10 +70,10 @@ const Index = () => {
             key="chat"
             variants={contentVariants}
             initial="hidden"
-            animate="Visible"
+            animate="visible"
             transition={{ duration: 0.3 }}
           >
-            <TextChat onBack={() => setActiveSection('dashboard')} />
+            <TextChat />
           </motion.div>
         );
       case 'insights':
@@ -85,7 +85,7 @@ const Index = () => {
             animate="visible"
             transition={{ duration: 0.3 }}
           >
-            <MoodDashboard onBack={() => setActiveSection('dashboard')} />
+            <MoodDashboard />
           </motion.div>
         );
       case 'settings':
@@ -117,7 +117,7 @@ const Index = () => {
           <SidebarInset className="flex-1">
             {/* Header */}
             <motion.header 
-              className="flex justify-between items-center p-6 border-b border-border/50 backdrop-blur-sm bg-background/80"
+              className="flex justify-between items-center p-6 border-b border-border/50 backdrop-blur-sm bg-background/80 h-[88px]"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -125,25 +125,11 @@ const Index = () => {
               <motion.div 
                 className="flex items-center gap-3"
                 whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                transition={{ type: "spring" as const, stiffness: 400, damping: 10 }}
               >
-                <motion.div 
-                  className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{ 
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Heart className="w-6 h-6 text-primary" />
-                </motion.div>
                 <div>
-                  <h1 className="text-3xl font-bold text-foreground">CalmMind</h1>
-                  <p className="text-sm text-muted-foreground">Your AI Therapy Companion</p>
+                  <h1 className="text-2xl font-bold text-foreground">Navigation</h1>
+                  <p className="text-sm text-muted-foreground">Therapy dashboard</p>
                 </div>
               </motion.div>
               

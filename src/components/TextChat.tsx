@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Sparkles } from "lucide-react";
@@ -5,10 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { generateTherapeuticResponse } from "@/services/gemini";
-
-interface TextChatProps {
-  onBack?: () => void;
-}
 
 interface Message {
   id: string;
@@ -19,7 +16,7 @@ interface Message {
   suggestedActions?: string[];
 }
 
-const TextChat = ({ onBack }: TextChatProps) => {
+const TextChat = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -143,7 +140,7 @@ const TextChat = ({ onBack }: TextChatProps) => {
               variants={messageVariants}
               initial="hidden"
               animate="visible"
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              transition={{ type: "spring" as const, stiffness: 300, damping: 25 }}
               className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <Card
