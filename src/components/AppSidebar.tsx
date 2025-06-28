@@ -42,12 +42,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
 
   return (
     <Sidebar 
-      className={`border-r border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 ${
-        isCollapsed ? 'w-0 overflow-hidden' : 'w-80'
-      }`}
+      className="border-r border-border/50 bg-card/50 backdrop-blur-sm w-64"
       collapsible="offcanvas"
     >
-      <SidebarHeader className="p-6 border-b border-border/50 h-[88px] flex justify-center items-center">
+      <SidebarHeader className="p-4 border-b border-border/50 h-[88px] flex justify-between items-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -55,7 +53,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           className="flex items-center gap-3"
         >
           <motion.div 
-            className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center"
+            className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center"
             animate={{ 
               scale: [1, 1.1, 1],
               rotate: [0, 5, -5, 0]
@@ -66,13 +64,14 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
               ease: "easeInOut"
             }}
           >
-            <Heart className="w-6 h-6 text-primary" />
+            <Heart className="w-5 h-5 text-primary" />
           </motion.div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">CalmMind</h2>
-            <p className="text-sm text-muted-foreground">Your AI Therapy Companion</p>
+            <h2 className="text-xl font-bold text-foreground">CalmMind</h2>
+            <p className="text-xs text-muted-foreground">Your AI Therapy Companion</p>
           </div>
         </motion.div>
+        <SidebarTrigger className="ml-auto" />
       </SidebarHeader>
 
       <SidebarContent className="p-2">
@@ -82,38 +81,40 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           </SidebarGroupLabel>
           
           <SidebarGroupContent className="mt-2">
-            <SidebarMenu className="space-y-3">
+            <SidebarMenu className="space-y-2">
               {navigationItems.map((item, index) => (
                 <SidebarMenuItem key={item.id}>
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ 
                       opacity: 1, 
-                      x: 0,
-                      transition: {
-                        delay: index * 0.1,
-                        type: "spring" as const,
-                        stiffness: 300,
-                        damping: 25
-                      }
+                      x: 0
                     }}
+                    transition={{
+                      delay: index * 0.1,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 25
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="mb-1"
                   >
                     <SidebarMenuButton
                       onClick={() => onSectionChange(item.id)}
                       isActive={activeSection === item.id}
                       className={`
-                        relative w-full justify-start gap-3 rounded-lg px-4 py-3 mb-2
-                        transition-all duration-200 hover:bg-accent/70
+                        relative w-full justify-start gap-3 rounded-lg px-4 py-3
+                        transition-all duration-200
                         ${activeSection === item.id 
-                          ? 'bg-primary/20 text-primary hover:bg-primary/30 border-l-4 border-primary' 
-                          : 'hover:bg-accent/50'
+                          ? 'bg-primary/20 text-primary border-l-4 border-primary' 
+                          : 'hover:bg-transparent'
                         }
                       `}
                     >
                       <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring" as const, stiffness: 400, damping: 10 }}
+                        whileHover={{ rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
                       >
                         <item.icon className="w-5 h-5 shrink-0" />
                       </motion.div>
@@ -134,7 +135,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                         <motion.div
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          transition={{ type: "spring" as const, stiffness: 400, damping: 10 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
                         >
                           <ChevronRight className="w-4 h-4 text-primary" />
                         </motion.div>
@@ -159,10 +160,6 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           </div>
         </motion.div>
       </SidebarContent>
-
-      <div className="absolute top-4 -right-4 z-50">
-        <SidebarTrigger className="bg-background border border-border rounded-full shadow-md hover:shadow-lg transition-shadow" />
-      </div>
     </Sidebar>
   );
 }

@@ -33,6 +33,24 @@ const DashboardHome = () => {
     { icon: BarChart3, label: "View Insights", description: "See your mood patterns", color: "bg-green-500/10 hover:bg-green-500/20" },
   ];
 
+  // Mock mood data for mini insights
+  const weeklyMoodData = [
+    { day: 'Mon', mood: 'happy', emoji: '😊', intensity: 8 },
+    { day: 'Tue', mood: 'neutral', emoji: '😐', intensity: 5 },
+    { day: 'Wed', mood: 'anxious', emoji: '😰', intensity: 3 },
+    { day: 'Thu', mood: 'peaceful', emoji: '😌', intensity: 7 },
+    { day: 'Fri', mood: 'happy', emoji: '😊', intensity: 9 },
+    { day: 'Sat', mood: 'peaceful', emoji: '😌', intensity: 8 },
+    { day: 'Sun', mood: 'neutral', emoji: '😐', intensity: 6 },
+  ];
+
+  const getIntensityColor = (intensity: number) => {
+    if (intensity >= 8) return 'bg-green-500';
+    if (intensity >= 6) return 'bg-blue-500';
+    if (intensity >= 4) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
   return (
     <motion.div
       variants={containerVariants}
@@ -76,6 +94,63 @@ const DashboardHome = () => {
             </Card>
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* Mini Mood Insights */}
+      <motion.div variants={itemVariants}>
+        <Card className="border-0 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <BarChart3 className="w-5 h-5 text-primary" />
+              </motion.div>
+              This Week's Mood Journey
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {weeklyMoodData.slice(0, 4).map((day, index) => (
+                <motion.div
+                  key={day.day}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center gap-4 p-2 rounded-lg hover:bg-background/30 transition-colors"
+                >
+                  <div className="w-10 text-center font-medium text-sm text-muted-foreground">
+                    {day.day}
+                  </div>
+                  <div className="text-xl">{day.emoji}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium capitalize text-sm">{day.mood}</span>
+                      <div className="flex-1 bg-muted rounded-full h-1.5">
+                        <div 
+                          className={`h-1.5 rounded-full transition-all duration-500 ${getIntensityColor(day.intensity)}`}
+                          style={{ width: `${day.intensity * 10}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground w-8">{day.intensity}/10</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <div className="mt-4 text-center">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button variant="outline" size="sm" className="text-xs">
+                  View Full Insights
+                </Button>
+              </motion.div>
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* Daily Check-in */}

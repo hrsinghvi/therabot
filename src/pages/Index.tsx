@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import VoiceSession from "@/components/VoiceSession";
 import DailyCheckin from "@/components/DailyCheckin";
@@ -127,6 +127,7 @@ const Index = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring" as const, stiffness: 400, damping: 10 }}
               >
+                <SidebarTrigger className="mr-2" />
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Navigation</h1>
                   <p className="text-sm text-muted-foreground">Therapy dashboard</p>
