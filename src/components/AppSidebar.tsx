@@ -29,7 +29,7 @@ const navigationItems = [{
   id: 'voice',
   label: 'Voice Session',
   icon: Mic,
-  description: 'AI voice therapy'
+  description: 'AI voice session'
 }, {
   id: 'chat',
   label: 'Text Chat',
@@ -101,8 +101,8 @@ export function AppSidebar({
             <Heart className="w-5 h-5 text-primary" />
           </motion.div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">CalmMind</h2>
-            <p className="text-xs text-muted-foreground">Your AI Therapy Companion</p>
+                          <h2 className="text-xl font-bold text-foreground">TheraBot</h2>
+            <p className="text-xs text-muted-foreground">Your AI Wellness Companion</p>
           </div>
         </motion.div>
         

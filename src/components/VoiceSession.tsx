@@ -103,7 +103,7 @@ const VoiceSession = () => {
         'voice',
         sessionId,
         transcript,
-        `Voice therapy session - ${Math.floor(sessionDuration / 60)}:${String(sessionDuration % 60).padStart(2, '0')}`
+        `Voice wellness session - ${Math.floor(sessionDuration / 60)}:${String(sessionDuration % 60).padStart(2, '0')}`
       );
       setMoodAnalysis(result.analysis);
     } catch (error) {
@@ -183,7 +183,7 @@ const VoiceSession = () => {
             {/* Title */}
             <div className="text-center mb-4">
               <div className="text-xl font-medium flex items-center justify-center gap-2 mb-2">
-                AI Voice Therapy
+                AI Voice Session
                 <Badge variant="secondary">
                   <Sparkles className="w-3 h-3 mr-1" />
                   Mood Analysis
@@ -223,7 +223,7 @@ const VoiceSession = () => {
                   ? `Duration: ${formatDuration(sessionDuration)} • Feel free to share what's on your mind`
                   : moodAnalysis
                   ? "Your emotional state has been analyzed using AI"
-                  : "Click the microphone to begin your voice therapy session"
+                  : "Click the microphone to begin your voice wellness session"
                 }
               </p>
             </div>

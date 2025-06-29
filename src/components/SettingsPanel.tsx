@@ -89,9 +89,9 @@ const SettingsPanel = () => {
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
              <Sparkles className="w-8 h-8 text-primary" />
           </div>
-          <h3 className="font-medium mb-1">CalmMind v1.0</h3>
+          <h3 className="font-medium mb-1">TheraBot v1.0</h3>
           <p className="text-sm text-muted-foreground">
-            Your AI therapy companion, built with care for your mental wellbeing.
+            Your AI wellness companion, built with care for your mental wellbeing.
           </p>
         </CardContent>
       </Card>

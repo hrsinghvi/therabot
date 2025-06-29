@@ -1,1 +1,1 @@
-# CalmMind AI
+# TheraBot

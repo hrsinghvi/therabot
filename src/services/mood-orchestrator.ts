@@ -28,7 +28,7 @@ export class MoodOrchestrator {
      * Analyzes mood from voice session content and stores results
      */
     async analyzeVoiceSession(sessionId: string, transcript: string): Promise<MoodAnalysisEntry> {
-        const analysis = await analyzeMoodFromText(transcript, 'voice', 'Voice therapy session');
+        const analysis = await analyzeMoodFromText(transcript, 'voice', 'Voice wellness session');
         
         // Store the analysis
         const storedAnalysis = await moodAnalysisService.create(analysis, sessionId, transcript);

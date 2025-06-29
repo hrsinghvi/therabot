@@ -72,7 +72,7 @@ const AuthPage = () => {
           >
             <Heart className="w-8 h-8 text-green-400" />
           </motion.div>
-          <h1 className="text-3xl font-bold text-foreground">Welcome to CalmMind</h1>
+                          <h1 className="text-3xl font-bold text-foreground">Welcome to TheraBot</h1>
           <p className="text-muted-foreground mt-2">
             {isSignUp ? 'Create your account to begin' : 'Sign in to continue your journey'}
           </p>

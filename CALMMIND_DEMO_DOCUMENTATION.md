@@ -1,8 +1,8 @@
-# CalmMind AI - Complete App Documentation & Demo Guide
+# TheraBot - Complete App Documentation & Demo Guide
 
 ## App Overview
 
-**CalmMind AI** is a comprehensive mental health and wellness companion that combines AI-powered mood analysis with therapeutic conversation capabilities. The app provides a safe, supportive digital space for users to explore their thoughts, track their emotional patterns, and receive personalized insights about their mental well-being.
+**TheraBot** is a comprehensive mental health and wellness companion that combines AI-powered mood analysis with therapeutic conversation capabilities. The app provides a safe, supportive digital space for users to explore their thoughts, track their emotional patterns, and receive personalized insights about their mental well-being.
 
 ### Core Mission
 
