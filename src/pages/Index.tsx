@@ -11,12 +11,26 @@ import SettingsPanel from "@/components/SettingsPanel";
 import DashboardHome from "@/components/DashboardHome";
 import { Moon, Sun } from "lucide-react";
 
+const SECTION_TITLES: { [key: string]: string } = {
+  dashboard: 'Dashboard',
+  voice: 'Voice Session',
+  chat: 'Text Chat',
+  insights: 'Mood Insights',
+  settings: 'Settings',
+};
+
 const Index = () => {
   const [activeSection, setActiveSection] = useState(() => {
     return localStorage.getItem('activeSection') || 'dashboard';
   });
+  const [pageTitle, setPageTitle] = useState(SECTION_TITLES[activeSection]);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
+      // Check localStorage first, then fallback to DOM class
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        return saved === 'dark';
+      }
       return document.documentElement.classList.contains('dark');
     }
     return false;
@@ -24,13 +38,16 @@ const Index = () => {
 
   useEffect(() => {
     localStorage.setItem('activeSection', activeSection);
+    setPageTitle(SECTION_TITLES[activeSection] || 'Dashboard');
   }, [activeSection]);
 
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   }, [isDarkMode]);
 
@@ -83,14 +100,17 @@ const Index = () => {
         return <DashboardHome />;
     }
   };
-  return <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-secondary/30">
+  return <div className="min-h-screen bg-background text-foreground">
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
-          <AppSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+          <AppSidebar 
+            activeSection={activeSection} 
+            onSectionChange={setActiveSection} 
+          />
           
-          <SidebarInset className="flex-1">
+          <SidebarInset className="flex-1 flex flex-col">
             {/* Header */}
-            <motion.header className="flex justify-between items-center p-6 border-b border-border/50 backdrop-blur-sm bg-background/80 h-[88px]" initial={{
+            <motion.header className="flex justify-between items-center p-6 border-b border-border backdrop-blur-sm bg-background/80 h-[88px] sticky top-0 z-10" initial={{
             opacity: 0,
             y: -20
           }} animate={{
@@ -108,8 +128,7 @@ const Index = () => {
             }}>
                 <SidebarTrigger className="mr-2 rounded-3xl " />
                 <div>
-                  
-                  
+                  <h1 className="text-2xl font-semibold text-foreground">{pageTitle}</h1>
                 </div>
               </motion.div>
               
@@ -131,7 +150,7 @@ const Index = () => {
             </motion.header>
 
             {/* Main Content */}
-            <main className="flex-1 p-6">
+            <main className="flex-1 p-6 overflow-y-auto">
               {renderContent()}
             </main>
           </SidebarInset>

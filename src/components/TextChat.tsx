@@ -234,16 +234,16 @@ const TextChat = () => {
     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } },
   };
   return (
-    <div className="h-[calc(100vh-180px)] flex bg-card/20 backdrop-blur-sm rounded-lg border border-black dark:border-white overflow-hidden">
-      <div className="w-1/4 min-w-[250px] border-r border-black dark:border-white flex flex-col">
-        <div className="p-4 border-b border-border/50 flex justify-between items-center h-[88px]">
+    <div className="h-[calc(100vh-180px)] flex bg-card/20 backdrop-blur-sm rounded-lg border border-border overflow-hidden">
+      <div className="w-1/4 min-w-[250px] border-r border-border flex flex-col">
+        <div className="p-4 border-b border-border flex justify-between items-center h-[88px]">
           <h1 className="text-2xl font-medium">Chat</h1>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-2">
             <Button
               variant="outline"
-              className="w-full justify-center gap-2 border-black dark:border-white"
+              className="w-full justify-center gap-2 border-border"
               onClick={handleNewConversation}
             >
               <Plus className="w-4 h-4" />
@@ -332,7 +332,7 @@ const TextChat = () => {
       </div>
 
       <div className="flex-1 flex flex-col">
-        <div className="flex items-center justify-center p-4 border-b border-border/50 h-[88px]">
+        <div className="flex items-center justify-center p-4 border-b border-border h-[88px]">
           <div className="flex items-center gap-2 text-primary">
           </div>
         </div>
@@ -399,8 +399,8 @@ const TextChat = () => {
           )}
         </AnimatePresence>
 
-        <div className="p-4 border-t border-border/50">
-                         <div className="flex items-center bg-background/50 dark:bg-muted/60 border border-black dark:border-white rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-primary/50 focus-within:shadow-lg">
+        <div className="p-4 border-t border-border">
+                         <div className="flex items-center bg-background/50 dark:bg-muted/60 border border-border rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-primary/50 focus-within:shadow-lg">
               <Textarea
                 ref={textareaRef}
                 value={currentMessage}

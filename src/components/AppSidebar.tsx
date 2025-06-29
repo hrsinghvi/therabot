@@ -1,10 +1,13 @@
 import { motion } from "framer-motion";
 import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
+import { UserProfile } from "./UserProfile";
+
 interface AppSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
 }
+
 const navigationItems = [{
   id: 'dashboard',
   label: 'Dashboard',
@@ -31,6 +34,7 @@ const navigationItems = [{
   icon: Settings,
   description: 'Preferences & config'
 }];
+
 export function AppSidebar({
   activeSection,
   onSectionChange
@@ -74,7 +78,7 @@ export function AppSidebar({
           
           <SidebarGroupContent className="mt-2">
             <SidebarMenu className="space-y-2">
-              {navigationItems.map((item, index) => <SidebarMenuItem key={item.id}>
+              {navigationItems.filter(item => item.id !== 'settings').map((item, index) => <SidebarMenuItem key={item.id}>
                   <motion.div initial={{
                 opacity: 0,
                 x: -20
@@ -141,7 +145,7 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <motion.div className="mt-auto p-4 border-t border-border/50" initial={{
+        <motion.div className="mt-auto p-2 border-t border-border/50" initial={{
         opacity: 0,
         y: 20
       }} animate={{
@@ -150,10 +154,7 @@ export function AppSidebar({
       }} transition={{
         delay: 0.5
       }}>
-          <div className="text-xs text-muted-foreground text-center space-y-1">
-            <p>✨ CalmMind AI</p>
-            <p>Your mental wellness companion</p>
-          </div>
+          <UserProfile name="John Dohn" onSettingsClick={() => onSectionChange('settings')} />
         </motion.div>
       </SidebarContent>
     </Sidebar>;
