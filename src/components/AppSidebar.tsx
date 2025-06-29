@@ -54,7 +54,7 @@ export function AppSidebar({
   } = useSidebar();
   const isCollapsed = state === "collapsed";
   return <Sidebar className="border-r border-border/50 bg-card/50 backdrop-blur-sm w-64" collapsible="offcanvas">
-      <SidebarHeader className="p-4 border-b border-border/50 h-[88px] flex justify-between items-center py-[24px]">
+      <SidebarHeader className="p-4 border-b border-border/50 h-[88px] flex justify-between items-center py-[24px] flex-shrink-0">
         <motion.div initial={{
         opacity: 0
       }} animate={{
@@ -80,8 +80,8 @@ export function AppSidebar({
         
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
-        <SidebarGroup>
+      <SidebarContent className="p-2 flex flex-col h-full">
+        <SidebarGroup className="flex-1 min-h-0">
           <SidebarGroupLabel className="px-2 text-xs font-medium text-muted-foreground/70 mb-4">
             Main Menu
           </SidebarGroupLabel>
@@ -155,7 +155,7 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <motion.div className="mt-auto p-2 border-t border-border/50" initial={{
+        <motion.div className="mt-auto p-2 border-t border-border/50 flex-shrink-0" initial={{
         opacity: 0,
         y: 20
       }} animate={{

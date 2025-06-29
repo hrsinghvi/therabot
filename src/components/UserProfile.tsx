@@ -19,19 +19,28 @@ export function UserProfile({ name, email, imageUrl, onSettingsClick }: UserProf
   };
 
   return (
-    <div className="flex items-center justify-between p-3">
-      <div className="flex items-center gap-3">
-        <Avatar className="w-10 h-10 border-2 border-primary/50">
+    <div className="flex items-center justify-between p-3 min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <Avatar className="w-10 h-10 border-2 border-primary/50 flex-shrink-0">
           <AvatarImage src={imageUrl} alt={name} />
           <AvatarFallback>{getInitials(name)}</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col">
-          <span className="text-sm font-medium text-foreground">{name}</span>
-          {email && <span className="text-xs text-muted-foreground">{email}</span>}
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-sm font-medium text-foreground truncate">{name}</span>
+          {email && (
+            <span className="text-xs text-muted-foreground truncate" title={email}>
+              {email}
+            </span>
+          )}
         </div>
       </div>
       
-      <Button variant="ghost" size="icon" className="rounded-full w-9 h-9" onClick={onSettingsClick}>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="rounded-full w-9 h-9 flex-shrink-0 ml-2" 
+        onClick={onSettingsClick}
+      >
         <Settings className="w-5 h-5 text-muted-foreground transition-transform duration-300 group-hover:rotate-90" />
       </Button>
     </div>
