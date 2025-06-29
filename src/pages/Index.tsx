@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppSidebar } from "@/components/AppSidebar";
 import DashboardHome from "@/components/DashboardHome";
 import VoiceSession from "@/components/VoiceSession";
 import TextChat from "@/components/TextChat";
 import Journal from "@/components/Journal";
-import MoodDashboard from "@/components/MoodDashboard";
 import SettingsPanel from "@/components/SettingsPanel";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
@@ -13,7 +13,6 @@ const sections = {
   voice: VoiceSession,
   chat: TextChat,
   journal: Journal,
-  insights: MoodDashboard,
   settings: SettingsPanel,
 };
 
@@ -37,9 +36,20 @@ const Index = () => {
           onSectionChange={handleSectionChange}
         />
         <SidebarInset className="flex-1 w-full">
-          <main className="flex-1 w-full h-full overflow-y-auto p-4">
-            <div className="w-full max-w-none">
+          <main className="flex-1 w-full h-full overflow-hidden">
+            <div className="w-full max-w-none h-full overflow-y-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSection}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="w-full h-full p-4"
+                >
               <ActiveComponent />
+                </motion.div>
+              </AnimatePresence>
             </div>
           </main>
         </SidebarInset>

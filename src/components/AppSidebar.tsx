@@ -41,11 +41,6 @@ const navigationItems = [{
   icon: Book,
   description: 'Personal reflections'
 }, {
-  id: 'insights',
-  label: 'Mood Insights',
-  icon: BarChart3,
-  description: 'Analytics & trends'
-}, {
   id: 'settings',
   label: 'Settings',
   icon: Settings,
@@ -134,14 +129,15 @@ export function AppSidebar({
                 stiffness: 300,
                 damping: 25
               }} whileHover={{
-                scale: 1.05
+                scale: 1.02,
+                x: 4
               }} whileTap={{
                 scale: 0.98
               }} className="mb-1">
                     <SidebarMenuButton onClick={() => onSectionChange(item.id)} isActive={activeSection === item.id} className={`
                         relative w-full justify-start gap-3 rounded-lg px-4 py-3
-                        transition-all duration-200
-                        ${activeSection === item.id ? 'bg-primary/20 text-primary border-l-4 border-primary' : 'hover:bg-transparent'}
+                        transition-all duration-300 ease-out
+                        ${activeSection === item.id ? 'bg-primary/20 text-primary border-l-4 border-primary shadow-lg' : 'hover:bg-secondary/80 hover:shadow-md hover:translate-x-1'}
                       `}>
                       <motion.div whileHover={{
                     rotate: 5

@@ -31,7 +31,6 @@ const AppRoutes = () => {
             <Route path="/voice" element={<Index />} />
             <Route path="/chat" element={<Index />} />
             <Route path="/journal" element={<Index />} />
-            <Route path="/insights" element={<Index />} />
             <Route path="/settings" element={<Index />} />
           </>
         ) : (

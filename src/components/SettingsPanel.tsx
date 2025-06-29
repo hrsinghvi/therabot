@@ -54,9 +54,6 @@ const SettingsPanel = () => {
               All conversations are encrypted and stored securely. You can delete your data at any time.
             </p>
           </div>
-          <Button variant="outline" className="w-full">
-            Manage Data
-          </Button>
           
           {/* Logout Section */}
           <div className="pt-4 border-t border-border">

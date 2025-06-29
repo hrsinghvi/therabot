@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, BookOpen, Edit } from 'lucide-react';
+import { Plus, BookOpen, Edit, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -108,9 +109,16 @@ const Journal = () => {
                       <CardContent>
                         <p className="text-muted-foreground line-clamp-2">{entry.content}</p>
                         {entry.ai_analysis && (
-                          <p className="text-xs text-primary/80 mt-2 pt-2 border-t border-border/50">
-                            <strong>AI Insight:</strong> {entry.ai_analysis}
-                          </p>
+                          <div className="mt-3 pt-3 border-t border-border/50">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs font-medium text-primary">AI Analysis:</span>
+                              <Badge variant="outline" className="text-xs">
+                                <Brain className="w-3 h-3 mr-1" />
+                                Mood Detected
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">{entry.ai_analysis}</p>
+                          </div>
                         )}
                       </CardContent>
                     </Card>

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { getChatSession, sendMessageToGemini, generateChatTitle } from "@/services/gemini";
 import { conversationService, messageService, type Conversation, type Message as DBMessage } from "@/services/supabase";
+import { moodOrchestrator } from "@/services/mood-orchestrator";
 import { useAuth } from "@/contexts/AuthContext";
 
 // UI Message type for local state
@@ -205,6 +206,19 @@ const TextChat = () => {
         created_at: savedAiMessage.created_at,
       };
       setMessages((prev) => [...prev, aiMessage]);
+      
+      // Trigger mood analysis using the mood orchestrator
+      try {
+        await moodOrchestrator.handleRealtimeMoodUpdate(
+          'chat', 
+          currentConversationId, 
+          optimisticMessage, 
+          responseText
+        );
+      } catch (error) {
+        console.error('Error analyzing chat mood:', error);
+        // Don't fail the chat if mood analysis fails
+      }
       
       // Update conversation timestamp
       await conversationService.updateTimestamp(currentConversationId);
