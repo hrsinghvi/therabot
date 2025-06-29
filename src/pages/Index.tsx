@@ -99,8 +99,8 @@ const Index = () => {
             }}>
                 <SidebarTrigger className="mr-2 bg-zinc-400 hover:bg-zinc-300 rounded-3xl" />
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">Navigation</h1>
-                  <p className="text-sm text-muted-foreground">Therapy dashboard</p>
+                  
+                  
                 </div>
               </motion.div>
               
