@@ -12,12 +12,12 @@ const VoiceSession = () => {
   const toggleMute = () => setIsMuted(!isMuted);
 
   return (
-    <div>
-      <Card>
+    <div className="pt-6 h-[calc(100vh-60px)]">
+      <Card className="h-full flex flex-col">
         <CardHeader>
           <CardTitle className="text-center text-xl font-medium">AI Voice Therapy</CardTitle>
         </CardHeader>
-        <CardContent className="text-center space-y-8 pt-8">
+        <CardContent className="flex-1 flex flex-col items-center justify-center text-center space-y-8">
           <motion.div
             className="w-40 h-40 mx-auto rounded-full bg-secondary flex items-center justify-center cursor-pointer"
             animate={isRecording ? { scale: [1, 1.05, 1] } : {}}
