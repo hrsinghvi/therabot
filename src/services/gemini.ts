@@ -1,92 +1,73 @@
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold, ChatSession } from "@google/generative-ai";
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const API_KEY = 'AIzaSyAEQcMouVdNU4rLFF0eP7WxauDc0MOwO8s';
+// IMPORTANT: Do not hardcode the API key. Use environment variables.
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-export interface GeminiResponse {
-  content: string;
-  isTherapeutic: boolean;
-  emotionalTone: 'supportive' | 'empathetic' | 'encouraging' | 'grounding';
-  suggestedActions?: string[];
-}
+const modelConfig = {
+  model: "gemini-1.5-flash-latest",
+  safetySettings: [
+    { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+    { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+  ],
+};
 
-export const generateTherapeuticResponse = async (userMessage: string, conversationHistory: string[] = []): Promise<GeminiResponse> => {
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+// Memoize the chat session to maintain conversation history
+let chatSession: ChatSession | null = null;
 
-  const therapeuticPrompt = `
-    You are CalmMind, a compassionate AI therapy companion. Your role is to provide emotional support, active listening, and gentle guidance. 
+export const getChatSession = (systemPrompt: string): ChatSession => {
+  if (chatSession) {
+    return chatSession;
+  }
 
-    Guidelines:
-    - Be warm, empathetic, and non-judgmental
-    - Use reflective listening techniques
-    - Ask open-ended questions to help users explore their feelings
-    - Offer coping strategies when appropriate
-    - Validate emotions and experiences
-    - Keep responses conversational and supportive
-    - If someone expresses crisis thoughts, gently suggest professional help
-    - Maintain a calm, therapeutic tone
+  const model = genAI.getGenerativeModel({
+    ...modelConfig,
+    systemInstruction: systemPrompt,
+  });
 
-    Recent conversation context: ${conversationHistory.slice(-3).join('\n')}
-    
-    User message: "${userMessage}"
-    
-    Please respond as CalmMind would, with empathy and therapeutic insight. Keep responses to 2-3 sentences maximum.
-  `;
+  chatSession = model.startChat({
+    history: [],
+  });
 
+  return chatSession;
+};
+
+export const sendMessageToGemini = async (session: ChatSession, message: string): Promise<string> => {
   try {
-    const result = await model.generateContent(therapeuticPrompt);
+    const result = await session.sendMessage(message);
     const response = await result.response;
-    const content = response.text();
-
-    // Simple emotion analysis based on content
-    const emotionalTone = analyzeEmotionalTone(content);
-    
-    return {
-      content: content.trim(),
-      isTherapeutic: true,
-      emotionalTone,
-      suggestedActions: generateSuggestedActions(userMessage)
-    };
+    return response.text();
   } catch (error) {
-    console.error('Gemini API error:', error);
-    return {
-      content: "I'm here to listen and support you. Sometimes I have trouble connecting, but I want you to know that your feelings are valid and important.",
-      isTherapeutic: true,
-      emotionalTone: 'supportive'
-    };
+    console.error("Gemini API Error:", error);
+    // Provide a generic, supportive error message to the user
+    return "I'm finding it a little difficult to connect right now. Thank you for your patience. I'm still here to listen.";
   }
 };
 
-const analyzeEmotionalTone = (response: string): 'supportive' | 'empathetic' | 'encouraging' | 'grounding' => {
-  const lowerResponse = response.toLowerCase();
-  
-  if (lowerResponse.includes('understand') || lowerResponse.includes('hear you')) {
-    return 'empathetic';
-  } else if (lowerResponse.includes('strength') || lowerResponse.includes('capable')) {
-    return 'encouraging';
-  } else if (lowerResponse.includes('breathe') || lowerResponse.includes('present')) {
-    return 'grounding';
-  }
-  
-  return 'supportive';
-};
+export const generateChatTitle = async (userMessage: string): Promise<string> => {
+  try {
+    const model = genAI.getGenerativeModel({
+      ...modelConfig,
+      systemInstruction: "You are a helpful assistant that generates concise, meaningful titles for conversations. Create a short title (2-5 words) that captures the main topic or theme of the user's message. Respond only with the title, no additional text or punctuation."
+    });
 
-const generateSuggestedActions = (userMessage: string): string[] => {
-  const suggestions = [];
-  const lowerMessage = userMessage.toLowerCase();
-  
-  if (lowerMessage.includes('stress') || lowerMessage.includes('anxious')) {
-    suggestions.push('Try a breathing exercise', 'Take a short walk');
+    const result = await model.generateContent(
+      `Generate a short, meaningful title for this conversation starter: "${userMessage}"`
+    );
+    const response = await result.response;
+    const title = response.text().trim();
+    
+    // Fallback to first few words if title is too long or empty
+    if (!title || title.length > 50) {
+      return userMessage.substring(0, 40).trim() + (userMessage.length > 40 ? "..." : "");
+    }
+    
+    return title;
+  } catch (error) {
+    console.error("Error generating chat title:", error);
+    // Fallback to truncated message
+    return userMessage.substring(0, 40).trim() + (userMessage.length > 40 ? "..." : "");
   }
-  
-  if (lowerMessage.includes('sad') || lowerMessage.includes('down')) {
-    suggestions.push('Listen to calming music', 'Write in a journal');
-  }
-  
-  if (lowerMessage.includes('overwhelmed')) {
-    suggestions.push('Break tasks into smaller steps', 'Practice mindfulness');
-  }
-  
-  return suggestions;
 };

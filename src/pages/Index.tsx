@@ -10,14 +10,22 @@ import TextChat from "@/components/TextChat";
 import SettingsPanel from "@/components/SettingsPanel";
 import DashboardHome from "@/components/DashboardHome";
 import { Moon, Sun } from "lucide-react";
+
 const Index = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState(() => {
+    return localStorage.getItem('activeSection') || 'dashboard';
+  });
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return document.documentElement.classList.contains('dark');
     }
     return false;
   });
+
+  useEffect(() => {
+    localStorage.setItem('activeSection', activeSection);
+  }, [activeSection]);
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -25,6 +33,7 @@ const Index = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
