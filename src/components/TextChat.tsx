@@ -238,7 +238,7 @@ const TextChat = () => {
     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } },
   };
   return (
-    <div className="h-[calc(100vh-180px)] flex bg-card/20 backdrop-blur-sm rounded-lg border border-border overflow-hidden">
+    <div className="h-[calc(100vh-60px)] flex bg-card/20 backdrop-blur-sm rounded-lg border border-border overflow-hidden mt-6">
       <div className="w-1/4 min-w-[250px] border-r border-border flex flex-col">
         <div className="p-4 border-b border-border flex justify-between items-center h-[88px]">
           <h1 className="text-2xl font-medium">Chat</h1>
@@ -404,34 +404,34 @@ const TextChat = () => {
         </AnimatePresence>
 
         <div className="p-4 border-t border-border">
-                         <div className="flex items-center bg-background/50 dark:bg-muted/60 border border-border rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-primary/50 focus-within:shadow-lg">
-              <Textarea
-                ref={textareaRef}
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={activeConversationId ? "Reply..." : "Start a new conversation..."}
-                className="flex-1 resize-none bg-transparent border-none outline-none focus:ring-0 focus-visible:ring-0 placeholder:text-muted-foreground/60 text-sm leading-relaxed py-2 max-h-32"
-                rows={1}
-                disabled={isLoading || isInitializing}
-                style={{
-                  minHeight: '24px',
-                  maxHeight: '128px',
-                  overflowY: currentMessage.split('\n').length > 4 ? 'auto' : 'hidden'
-                }}
-              />
-              <Button 
-                onClick={handleSendMessage} 
-                disabled={isLoading || isInitializing || !currentMessage.trim()}
-                size="icon"
-                className="rounded-full flex-shrink-0 w-8 h-8 ml-2 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground transition-all duration-200"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
+          <div className="flex items-center bg-background/50 dark:bg-muted/60 border border-border rounded-full px-4 py-2 shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-primary/50 focus-within:shadow-lg">
+            <Textarea
+              ref={textareaRef}
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder={activeConversationId ? "Reply..." : "Start a new conversation..."}
+              className="flex-1 resize-none bg-transparent border-none outline-none focus:ring-0 focus-visible:ring-0 placeholder:text-muted-foreground/60 text-sm leading-relaxed py-2 max-h-32"
+              rows={1}
+              disabled={isLoading || isInitializing}
+              style={{
+                minHeight: '24px',
+                maxHeight: '128px',
+                overflowY: currentMessage.split('\n').length > 4 ? 'auto' : 'hidden'
+              }}
+            />
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={isLoading || isInitializing || !currentMessage.trim()}
+              size="icon"
+              className="rounded-full flex-shrink-0 w-8 h-8 ml-2 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground transition-all duration-200"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
+    </div>
   );
 };
 

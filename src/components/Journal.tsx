@@ -33,7 +33,7 @@ const Journal = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="h-full flex flex-col space-y-6"
+      className="h-full flex flex-col space-y-6 pt-6"
     >
       {/* Today's Reflection Section */}
       <Card className="bg-gradient-to-br from-primary/10 to-transparent">
@@ -84,7 +84,7 @@ const Journal = () => {
               ))}
             </div>
           ) : (
-            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm h-full">
+            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm h-full min-h-[400px]">
               <div className="flex flex-col items-center gap-1 text-center">
                 <h3 className="text-2xl font-bold tracking-tight">
                   You have no journal entries

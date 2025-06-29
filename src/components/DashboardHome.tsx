@@ -57,7 +57,7 @@ const DashboardHome = () => {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pt-6">
       {/* Welcome Section */}
       <div className="p-6 bg-secondary/50 rounded-lg">
         <h2 className="text-3xl font-light text-foreground mb-2">

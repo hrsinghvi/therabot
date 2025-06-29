@@ -26,28 +26,8 @@ const SettingsPanel = () => {
   }, [darkMode]);
 
   return (
-    <div className="space-y-8">
-      {/* Preferences Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Palette className="w-5 h-5 text-primary" />
-            <span>Preferences</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between p-4 rounded-lg hover:bg-muted/50 transition-colors">
-            <div className="flex items-center gap-4">
-              {darkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-blue-500" />}
-              <div>
-                <h3 className="font-medium">Dark Mode</h3>
-                <p className="text-sm text-muted-foreground">Toggle between light and dark themes.</p>
-              </div>
-            </div>
-            <Switch checked={darkMode} onCheckedChange={setDarkMode} />
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-8 pt-6">
+
 
       {/* Privacy & Security Card */}
       <Card>

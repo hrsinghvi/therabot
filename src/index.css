@@ -4,74 +4,65 @@
 
 @layer base {
   :root {
-    --background: 41 9% 96%;
-    --foreground: 215 16% 21%;
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 16% 21%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 16% 21%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 159 62% 45%;
+    --primary: 200 35% 47%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 41 9% 91%;
-    --secondary-foreground: 215 16% 21%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 41 9% 91%;
-    --muted-foreground: 215 8% 47%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
 
-    --accent: 200 25% 85%;
-    --accent-foreground: 215 16% 21%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 41 9% 88%;
-    --input: 41 9% 88%;
-    --ring: 159 62% 45%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 200 35% 47%;
 
-    --radius: 0.75rem;
-
-    --therapy-cream: 41 9% 96%;
-    --therapy-sage: 159 62% 45%;
-    --therapy-blue: 200 25% 85%;
-    --therapy-lavender: 260 15% 85%;
+    --radius: 0.5rem;
   }
 
   .dark {
-    --background: 220 10% 8%;
+    --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
 
-    --card: 220 10% 10%;
+    --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 220 10% 10%;
+    --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 159 62% 45%;
+    --primary: 200 35% 47%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 10% 15%;
+    --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 10% 15%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
 
-    --accent: 220 10% 20%;
+    --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62% 30%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 20%;
-    --input: 220 10% 20%;
-    --ring: 159 62% 45%;
-
-    --therapy-navy: 0 0% 7%;
-    --therapy-sage: 159 62% 45%;
-    --therapy-teal: 180 25% 40%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 200 35% 47%;
   }
 }
 
@@ -79,10 +70,9 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 }
 
