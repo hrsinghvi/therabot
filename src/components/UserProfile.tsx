@@ -1,15 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 
 interface UserProfileProps {
   name: string;
   email?: string;
   imageUrl?: string;
   onSettingsClick: () => void;
+  onLogout: () => void;
 }
 
-export function UserProfile({ name, email, imageUrl, onSettingsClick }: UserProfileProps) {
+export function UserProfile({ name, email, imageUrl, onSettingsClick, onLogout }: UserProfileProps) {
   const getInitials = (name: string) => {
     if (!name) return "?";
     const names = name.split(' ');
@@ -32,9 +33,14 @@ export function UserProfile({ name, email, imageUrl, onSettingsClick }: UserProf
         </div>
       </div>
       
-      <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 flex-shrink-0" onClick={onSettingsClick}>
-        <Settings className="w-5 h-5 text-muted-foreground transition-transform duration-300 group-hover:rotate-90" />
-      </Button>
+      <div className="flex items-center">
+        <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 flex-shrink-0" onClick={onSettingsClick}>
+          <Settings className="w-5 h-5 text-muted-foreground transition-transform duration-300 group-hover:rotate-90" />
+        </Button>
+        <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 flex-shrink-0" onClick={onLogout}>
+          <LogOut className="w-5 h-5 text-muted-foreground" />
+        </Button>
+      </div>
     </div>
   );
 } 

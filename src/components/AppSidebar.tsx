@@ -211,6 +211,7 @@ export function AppSidebar({
               email={userEmail}
               imageUrl={user.user_metadata.avatar_url}
               onSettingsClick={() => onSectionChange('settings')} 
+              onLogout={logout}
             />
           ) : (
             <div className="p-3">
