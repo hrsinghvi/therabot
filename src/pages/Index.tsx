@@ -9,6 +9,7 @@ import MoodDashboard from "@/components/MoodDashboard";
 import TextChat from "@/components/TextChat";
 import SettingsPanel from "@/components/SettingsPanel";
 import DashboardHome from "@/components/DashboardHome";
+import Journal from "@/components/Journal";
 import { Moon, Sun } from "lucide-react";
 
 const SECTION_TITLES: { [key: string]: string } = {
@@ -83,6 +84,12 @@ const Index = () => {
           duration: 0.3
         }}>
             <TextChat />
+          </motion.div>;
+      case 'journal':
+        return <motion.div key="journal" variants={contentVariants} initial="hidden" animate="visible" transition={{
+          duration: 0.3
+        }}>
+            <Journal />
           </motion.div>;
       case 'insights':
         return <motion.div key="insights" variants={contentVariants} initial="hidden" animate="visible" transition={{

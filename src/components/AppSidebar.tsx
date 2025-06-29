@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart } from "lucide-react";
+import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { UserProfile } from "./UserProfile";
 
@@ -23,6 +23,11 @@ const navigationItems = [{
   label: 'Text Chat',
   icon: MessageCircle,
   description: 'Written conversation'
+}, {
+  id: 'journal',
+  label: 'Journal',
+  icon: Book,
+  description: 'Personal reflections'
 }, {
   id: 'insights',
   label: 'Mood Insights',
