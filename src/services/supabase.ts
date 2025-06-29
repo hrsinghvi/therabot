@@ -29,9 +29,11 @@ export interface Message {
 export interface JournalEntry {
   id: string;
   user_id: string;
+  created_at: string;
   title: string;
   content: string;
-  created_at: string;
+  mood?: string;
+  ai_analysis?: string;
 }
 
 export interface DailyCheckin {
@@ -152,13 +154,23 @@ export const journalService = {
 
         const { data, error } = await supabase
             .from('journal_entries')
-            .insert({ ...entry, user_id: user.id })
+            .insert([{ ...entry, user_id: user.id }])
             .select()
             .single();
         if (error) throw error;
         return data;
     },
-     async delete(id: string): Promise<void> {
+    async update(id: string, entry: Partial<Omit<JournalEntry, 'id' | 'created_at' | 'user_id'>>): Promise<JournalEntry> {
+        const { data, error } = await supabase
+            .from('journal_entries')
+            .update(entry)
+            .eq('id', id)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+    async delete(id: string): Promise<void> {
         const { error } = await supabase
             .from('journal_entries')
             .delete()

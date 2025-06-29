@@ -1,10 +1,19 @@
 import React from 'react';
 import { motion } from "framer-motion";
-import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book } from "lucide-react";
+import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { UserProfile } from "./UserProfile";
 import { Skeleton } from './ui/skeleton';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from './ui/badge';
 
 interface AppSidebarProps {
   activeSection: string;
@@ -43,16 +52,40 @@ const navigationItems = [{
   description: 'Preferences & config'
 }];
 
+// Helper function to get user initials
+const getInitials = (name: string) => {
+  const names = name.split(' ');
+  if (names.length > 1) {
+    return `${names[0][0]}${names[names.length - 1][0]}`;
+  }
+  return names[0][0];
+};
+
+// Helper function to format user name
+const formatUserName = (name: string) => {
+    if (name.length > 15) {
+        const names = name.split(' ');
+        if (names.length > 1) {
+            return `${names[0]} ${names[names.length - 1][0]}.`;
+        }
+    }
+    return name;
+}
+
 export function AppSidebar({
   activeSection,
   onSectionChange
 }: AppSidebarProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const {
     state
   } = useSidebar();
   const isCollapsed = state === "collapsed";
+
+  const userName = user?.user_metadata?.full_name || 'Anonymous';
+  const userEmail = user?.email;
+
   return <Sidebar className="border-r border-border/50 bg-card/50 backdrop-blur-sm w-64" collapsible="offcanvas">
       <SidebarHeader className="p-4 border-b border-border/50 h-[88px] flex justify-between items-center py-[24px] flex-shrink-0">
         <motion.div initial={{
@@ -174,8 +207,8 @@ export function AppSidebar({
             </div>
           ) : user ? (
             <UserProfile 
-              name={user.user_metadata.full_name || user.email} 
-              email={user.email}
+              name={formatUserName(userName)} 
+              email={userEmail}
               imageUrl={user.user_metadata.avatar_url}
               onSettingsClick={() => onSectionChange('settings')} 
             />

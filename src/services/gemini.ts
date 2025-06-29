@@ -71,3 +71,17 @@ export const generateChatTitle = async (userMessage: string): Promise<string> =>
     return userMessage.substring(0, 40).trim() + (userMessage.length > 40 ? "..." : "");
   }
 };
+
+export async function analyzeJournalEntry(entryContent: string): Promise<string> {
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const prompt = `Analyze the sentiment and key themes of the following journal entry. Provide a brief, one-sentence summary. Entry: "${entryContent}"`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Error analyzing journal entry:", error);
+    return "AI analysis could not be completed.";
+  }
+}
