@@ -1,50 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import { motion } from "framer-motion";
 import { Heart, TrendingUp, Calendar, MessageCircle, Mic, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-const stats = [{
-  icon: Calendar,
-  label: "Days Tracked",
-  value: "14",
-  color: "text-blue-500"
-}, {
-  icon: Heart,
-  label: "Positive Days",
-  value: "9",
-  color: "text-green-500"
-}, {
-  icon: TrendingUp,
-  label: "Mood Trend",
-  value: "+12%",
-  color: "text-primary"
-}];
-
-const weeklyMoodData = [{
-  day: 'Mon',
-  mood: 'Happy',
-  emoji: '😊',
-  intensity: 8,
-  color: 'bg-green-500'
-}, {
-  day: 'Tue',
-  mood: 'Neutral',
-  emoji: '😐',
-  intensity: 5,
-  color: 'bg-yellow-500'
-}, {
-  day: 'Wed',
-  mood: 'Anxious',
-  emoji: '😰',
-  intensity: 3,
-  color: 'bg-red-500'
-}, {
-  day: 'Thu',
-  mood: 'Peaceful',
-  emoji: '😌',
-  intensity: 7,
-  color: 'bg-blue-500'
-}];
+import { moodService } from '@/services/supabase';
+import { processMoodData } from '@/lib/mood-processing';
 
 const quickActions = [{
   icon: Mic,
@@ -64,6 +24,38 @@ const quickActions = [{
 }];
 
 const DashboardHome = () => {
+  const [stats, setStats] = useState([]);
+  const [weeklyMoodData, setWeeklyMoodData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMoodData = async () => {
+      try {
+        setLoading(true);
+        const entries = await moodService.list();
+        const { stats, weeklyData } = processMoodData(entries);
+        setStats(stats);
+        setWeeklyMoodData(weeklyData.slice(0, 4)); // Show a smaller slice on the dashboard
+      } catch (error) {
+        console.error("Error fetching mood entries:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoodData();
+  }, []);
+
+  const StatCard = ({ icon: Icon, label, value, color }) => (
+    <Card>
+      <CardContent className="p-6 flex flex-col items-center justify-center text-center">
+        <Icon className={`w-8 h-8 mb-3 ${color || 'text-primary'}`} />
+        <div className="text-3xl font-bold text-foreground mb-1">{value}</div>
+        <div className="text-sm text-muted-foreground">{label}</div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
@@ -76,17 +68,19 @@ const DashboardHome = () => {
         </p>
       </div>
 
+      {loading ? <p>Loading dashboard...</p> : <>
+
       {/* Stats Cards */}
       <div className="grid md:grid-cols-3 gap-6">
-        {stats.map(stat => (
-          <Card key={stat.label}>
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              <stat.icon className={`w-8 h-8 mb-3 ${stat.color}`} />
-              <div className="text-3xl font-bold text-foreground mb-1">{stat.value}</div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {stats.length > 0 ? (
+          stats.map(stat => <StatCard key={stat.label} {...stat} />)
+        ) : (
+          <>
+            <StatCard icon={Calendar} label="Days Tracked" value="0" color="text-blue-500" />
+            <StatCard icon={Heart} label="Positive Days" value="0" color="text-green-500" />
+            <StatCard icon={TrendingUp} label="Mood Trend" value="0%" color="text-primary" />
+          </>
+        )}
       </div>
 
       {/* Mini Mood Insights */}
@@ -98,24 +92,39 @@ const DashboardHome = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {weeklyMoodData.map(day => (
-              <div key={day.day} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="w-10 text-center font-medium text-sm text-muted-foreground">{day.day}</div>
-                <div className="text-xl">{day.emoji}</div>
-                <div className="font-medium capitalize text-sm w-20">{day.mood}</div>
-                <div className="flex-1 bg-muted rounded-full h-2">
-                  <div className={`h-2 rounded-full ${day.color}`} style={{ width: `${day.intensity * 10}%` }} />
-                </div>
-                <span className="text-xs text-muted-foreground w-8 text-right">{day.intensity}/10</span>
+          {weeklyMoodData.length > 0 ? (
+            <>
+              <div className="space-y-4">
+                {weeklyMoodData.map(day => (
+                  <div key={day.day} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="w-10 text-center font-medium text-sm text-muted-foreground">{day.day}</div>
+                    <div className="text-xl">{day.emoji}</div>
+                    <div className="font-medium capitalize text-sm w-20">{day.mood}</div>
+                    <div className="flex-1 bg-muted rounded-full h-2">
+                      <div className={`h-2 rounded-full ${day.color}`} style={{ width: `${day.intensity * 10}%` }} />
+                    </div>
+                    <span className="text-xs text-muted-foreground w-8 text-right">{day.intensity}/10</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="mt-6 text-center">
-            <Button variant="outline" size="sm">
-              View Full Insights
-            </Button>
-          </div>
+              <div className="mt-6 text-center">
+                <Button variant="outline" size="sm">
+                  View Full Insights
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-10">
+              <BarChart3 className="mx-auto h-10 w-10 text-muted-foreground" />
+              <h3 className="mt-4 text-md font-semibold">Your weekly summary will appear here</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Check in daily to see your mood patterns.
+              </p>
+              <Button variant="secondary" className="mt-4" size="sm">
+                Start Daily Check-in
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -172,6 +181,7 @@ const DashboardHome = () => {
           </CardTitle>
         </CardHeader>
       </Card>
+    </>}
     </div>
   );
 };

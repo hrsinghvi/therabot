@@ -1,7 +1,10 @@
+import React from 'react';
 import { motion } from "framer-motion";
 import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { UserProfile } from "./UserProfile";
+import { Skeleton } from './ui/skeleton';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AppSidebarProps {
   activeSection: string;
@@ -44,6 +47,8 @@ export function AppSidebar({
   activeSection,
   onSectionChange
 }: AppSidebarProps) {
+  const { user, loading } = useAuth();
+
   const {
     state
   } = useSidebar();
@@ -159,7 +164,26 @@ export function AppSidebar({
       }} transition={{
         delay: 0.5
       }}>
-          <UserProfile name="John Dohn" onSettingsClick={() => onSectionChange('settings')} />
+          {loading ? (
+             <div className="flex items-center gap-3 p-3">
+              <Skeleton className="w-10 h-10 rounded-full" />
+              <div className="flex flex-col gap-1">
+                <Skeleton className="w-24 h-4" />
+                <Skeleton className="w-32 h-3" />
+              </div>
+            </div>
+          ) : user ? (
+            <UserProfile 
+              name={user.user_metadata.full_name || user.email} 
+              email={user.email}
+              imageUrl={user.user_metadata.avatar_url}
+              onSettingsClick={() => onSectionChange('settings')} 
+            />
+          ) : (
+            <div className="p-3">
+              <p>No user found</p>
+            </div>
+          )}
         </motion.div>
       </SidebarContent>
     </Sidebar>;

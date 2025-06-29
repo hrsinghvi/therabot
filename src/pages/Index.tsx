@@ -16,6 +16,7 @@ const SECTION_TITLES: { [key: string]: string } = {
   dashboard: 'Dashboard',
   voice: 'Voice Session',
   chat: 'Text Chat',
+  journal: 'Journal',
   insights: 'Mood Insights',
   settings: 'Settings',
 };

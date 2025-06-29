@@ -1,55 +1,65 @@
+import React, { useEffect, useState } from 'react';
 import { motion } from "framer-motion";
-import { TrendingUp, Calendar, Heart, BarChart3 } from "lucide-react";
+import { TrendingUp, Calendar, Heart, BarChart3, TrendingDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const weeklyData = [
-    { day: 'Mon', mood: 'Happy', emoji: '😊', intensity: 8, color: 'bg-green-500' },
-    { day: 'Tue', mood: 'Neutral', emoji: '😐', intensity: 5, color: 'bg-yellow-500' },
-    { day: 'Wed', mood: 'Anxious', emoji: '😰', intensity: 3, color: 'bg-red-500' },
-    { day: 'Thu', mood: 'Peaceful', emoji: '😌', intensity: 7, color: 'bg-blue-500' },
-    { day: 'Fri', mood: 'Happy', emoji: '😊', intensity: 9, color: 'bg-green-500' },
-    { day: 'Sat', mood: 'Peaceful', emoji: '😌', intensity: 8, color: 'bg-blue-500' },
-    { day: 'Sun', mood: 'Neutral', emoji: '😐', intensity: 6, color: 'bg-yellow-500' },
-];
-
-const insights = [
-    "You've had 3 positive mood days this week - that's wonderful!",
-    "Your emotional awareness has increased by 20% this month.",
-    "Wednesday showed some anxiety - consider what patterns you notice.",
-    "Weekend check-ins show consistent peace and balance."
-];
-
-const stats = [{
-  icon: Calendar,
-  label: "Days Tracked",
-  value: "7",
-  color: "text-blue-500"
-}, {
-  icon: Heart,
-  label: "Positive Days",
-  value: "71%",
-  color: "text-green-500"
-}, {
-  icon: TrendingUp,
-  label: "Week Streak",
-  value: "3",
-  color: "text-primary"
-}];
+import { Button } from './ui/button';
+import { moodService, type MoodEntry } from '@/services/supabase';
+import { processMoodData } from '@/lib/mood-processing';
 
 const MoodDashboard = () => {
+  const [stats, setStats] = useState([]);
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [insights, setInsights] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMoodData = async () => {
+      try {
+        setLoading(true);
+        const entries = await moodService.list();
+        const { stats, weeklyData, insights } = processMoodData(entries);
+        setStats(stats);
+        setWeeklyData(weeklyData);
+        setInsights(insights);
+      } catch (error) {
+        console.error("Error fetching mood entries:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoodData();
+  }, []);
+
+  const StatCard = ({ icon: Icon, label, value, color }) => (
+    <Card>
+      <CardContent className="p-6 flex flex-col items-center justify-center text-center">
+        <Icon className={`w-8 h-8 mb-3 ${color || 'text-primary'}`} />
+        <div className="text-3xl font-bold text-foreground mb-1">{value}</div>
+        <div className="text-sm text-muted-foreground">{label}</div>
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <div className="space-y-8">
+    <motion.div 
+      className="space-y-8"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {loading ? <p>Loading dashboard...</p> : <>
       {/* Overview Cards */}
       <div className="grid md:grid-cols-3 gap-6">
-        {stats.map(stat => (
-          <Card key={stat.label}>
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-              <stat.icon className={`w-8 h-8 mb-3 ${stat.color}`} />
-              <div className="text-3xl font-bold text-foreground mb-1">{stat.value}</div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {stats.length > 0 ? (
+          stats.map(stat => <StatCard key={stat.label} {...stat} />)
+        ) : (
+          <>
+            <StatCard icon={Calendar} label="Days Tracked" value="0" color="text-blue-500" />
+            <StatCard icon={Heart} label="Positive Days" value="0%" color="text-green-500" />
+            <StatCard icon={TrendingUp} label="Week Streak" value="0" color="text-primary" />
+          </>
+        )}
       </div>
 
       {/* Weekly Mood Chart */}
@@ -61,19 +71,30 @@ const MoodDashboard = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {weeklyData.map(day => (
-              <div key={day.day} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="w-10 text-center font-medium text-sm text-muted-foreground">{day.day}</div>
-                <div className="text-xl">{day.emoji}</div>
-                <div className="font-medium capitalize text-sm w-20">{day.mood}</div>
-                <div className="flex-1 bg-muted rounded-full h-2">
-                  <div className={`h-2 rounded-full ${day.color}`} style={{ width: `${day.intensity * 10}%` }} />
+          {weeklyData.length > 0 ? (
+            <div className="space-y-4">
+              {weeklyData.map(day => (
+                <div key={day.day} className="flex items-center gap-4 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="w-10 text-center font-medium text-sm text-muted-foreground">{day.day}</div>
+                  <div className="text-xl">{day.emoji}</div>
+                  <div className="font-medium capitalize text-sm w-20">{day.mood}</div>
+                  <div className="flex-1 bg-muted rounded-full h-2">
+                    <div className={`h-2 rounded-full ${day.color}`} style={{ width: `${day.intensity * 10}%` }} />
+                  </div>
+                  <span className="text-xs text-muted-foreground w-8 text-right">{day.intensity}/10</span>
                 </div>
-                <span className="text-xs text-muted-foreground w-8 text-right">{day.intensity}/10</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <BarChart3 className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-semibold">No mood data yet</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Start tracking your mood to see your journey here.
+              </p>
+              <Button className="mt-4">Track Today's Mood</Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -81,19 +102,29 @@ const MoodDashboard = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary" />
+            <TrendingUp className="w-5 h-5 text-primary" />
             <span>Personal Insights</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-3">
-            {insights.map((insight, index) => (
-              <li key={index} className="flex items-start gap-3 p-3 rounded-lg bg-secondary">
-                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
-                <p className="text-foreground text-sm">{insight}</p>
-              </li>
-            ))}
-          </ul>
+          {insights.length > 0 ? (
+            <ul className="space-y-3">
+              {insights.map((insight, index) => (
+                <li key={index} className="flex items-start gap-3 p-3 rounded-lg bg-secondary">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
+                  <p className="text-foreground text-sm">{insight}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+             <div className="text-center py-12">
+              <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
+              <h3 className="mt-4 text-lg font-semibold">Insights will appear here</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                The more you track, the more personalized insights you'll get.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -104,7 +135,8 @@ const MoodDashboard = () => {
           Every feeling you acknowledge is a step toward understanding yourself better.
         </p>
       </div>
-    </div>
+      </>}
+    </motion.div>
   );
 };
 

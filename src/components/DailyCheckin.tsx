@@ -1,9 +1,9 @@
-
 import { useState } from "react";
 import { ArrowLeft, Heart, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { dailyCheckinService } from "@/services/supabase";
 
 interface DailyCheckinProps {
   onBack: () => void;
@@ -13,7 +13,6 @@ const DailyCheckin = ({ onBack }: DailyCheckinProps) => {
   const [selectedMood, setSelectedMood] = useState<string>("");
   const [reflection, setReflection] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [aiResponse, setAiResponse] = useState("");
 
   const moods = [
     { emoji: "😊", label: "Happy", value: "happy", color: "bg-green-100 border-green-300 text-green-800" },
@@ -24,24 +23,19 @@ const DailyCheckin = ({ onBack }: DailyCheckinProps) => {
     { emoji: "😠", label: "Frustrated", value: "frustrated", color: "bg-red-100 border-red-300 text-red-800" },
   ];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedMood) return;
     
-    setSubmitted(true);
-    
-    // Generate personalized response based on mood
-    setTimeout(() => {
-      const responses = {
-        happy: "It's wonderful to hear you're feeling happy today! Happiness is precious - what brought this joy to your day? Remember to savor these moments.",
-        peaceful: "Finding peace within yourself is such a gift. This sense of calm you're experiencing - hold onto it. You've earned this tranquility.",
-        neutral: "Feeling neutral is perfectly valid. Not every day needs to be extraordinary. Sometimes stability and balance are exactly what we need.",
-        sad: "I'm here with you in this sadness. It's okay to feel this way - your emotions are valid. Would you like to explore what's contributing to these feelings?",
-        anxious: "I can sense the anxiety you're carrying. Take a deep breath with me. You're safe right now, and we can work through these worried thoughts together.",
-        frustrated: "Frustration can feel so overwhelming. I hear you, and I understand. Let's acknowledge these feelings and think about what might help you find some relief."
-      };
-      
-      setAiResponse(responses[selectedMood as keyof typeof responses] || "Thank you for sharing with me today. Your feelings matter, and I'm here to support you.");
-    }, 1500);
+    try {
+      await dailyCheckinService.create({
+        mood: selectedMood,
+        reflection: reflection
+      });
+      setSubmitted(true);
+    } catch (error) {
+        console.error("Error creating daily checkin:", error);
+        // Optionally, show an error message to the user
+    }
   };
 
   if (submitted) {
@@ -81,15 +75,6 @@ const DailyCheckin = ({ onBack }: DailyCheckinProps) => {
               )}
             </CardContent>
           </Card>
-
-          {aiResponse && (
-            <Card className="border-0 bg-accent/20">
-              <CardContent className="p-6">
-                <h3 className="font-medium mb-3 text-sm text-muted-foreground">CalmMind's reflection:</h3>
-                <p className="text-foreground leading-relaxed">{aiResponse}</p>
-              </CardContent>
-            </Card>
-          )}
 
           <div className="text-center mt-8">
             <Button

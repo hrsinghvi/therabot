@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { getChatSession, sendMessageToGemini, generateChatTitle } from "@/services/gemini";
 import { conversationService, messageService, type Conversation, type Message as DBMessage } from "@/services/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 // UI Message type for local state
 interface Message {
@@ -36,6 +37,7 @@ const EmptyChatState = () => (
 );
 
 const TextChat = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -50,16 +52,18 @@ const TextChat = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const listConversations = useCallback(async () => {
+    if (!user) return;
     try {
       const conversations = await conversationService.list();
       setConversations(conversations);
     } catch (error) {
       console.error("Failed to fetch conversations:", error);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const initializeApp = async () => {
+      if (!user) return;
       setIsInitializing(true);
       try {
         const response = await fetch('/SYSTEM_PROMPT.md');
@@ -75,7 +79,7 @@ const TextChat = () => {
       }
     };
     initializeApp();
-  }, [listConversations]);
+  }, [listConversations, user]);
   
   useEffect(() => {
     if (!isLoading) textareaRef.current?.focus();

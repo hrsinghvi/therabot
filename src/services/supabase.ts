@@ -26,6 +26,30 @@ export interface Message {
   created_at: string;
 }
 
+export interface JournalEntry {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  created_at: string;
+}
+
+export interface DailyCheckin {
+    id: string;
+    user_id: string;
+    mood: string;
+    reflection: string;
+    created_at: string;
+}
+
+export interface MoodEntry {
+    id: string;
+    user_id: string;
+    mood: string;
+    intensity: number;
+    created_at: string;
+}
+
 // Database operations
 export const conversationService = {
   async list(): Promise<Conversation[]> {
@@ -38,10 +62,13 @@ export const conversationService = {
     return data || [];
   },
 
-  async create(title: string, userId: string = 'anonymous'): Promise<Conversation> {
+  async create(title: string): Promise<Conversation> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
     const { data, error } = await supabase
       .from('conversations')
-      .insert({ title, user_id: userId })
+      .insert({ title, user_id: user.id })
       .select()
       .single();
     
@@ -108,4 +135,80 @@ export const messageService = {
     if (error) throw error;
     return data;
   }
+};
+
+export const journalService = {
+    async list(): Promise<JournalEntry[]> {
+        const { data, error } = await supabase
+            .from('journal_entries')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    },
+    async create(entry: Omit<JournalEntry, 'id' | 'created_at' | 'user_id'>): Promise<JournalEntry> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+            .from('journal_entries')
+            .insert({ ...entry, user_id: user.id })
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+     async delete(id: string): Promise<void> {
+        const { error } = await supabase
+            .from('journal_entries')
+            .delete()
+            .eq('id', id);
+        if (error) throw error;
+    }
+};
+
+export const dailyCheckinService = {
+    async list(): Promise<DailyCheckin[]> {
+        const { data, error } = await supabase
+            .from('daily_checkins')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    },
+    async create(checkin: Omit<DailyCheckin, 'id' | 'created_at' | 'user_id'>): Promise<DailyCheckin> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+            .from('daily_checkins')
+            .insert({ ...checkin, user_id: user.id })
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    }
+};
+
+export const moodService = {
+    async list(): Promise<MoodEntry[]> {
+        const { data, error } = await supabase
+            .from('mood_entries')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        return data || [];
+    },
+    async create(mood: Omit<MoodEntry, 'id' | 'created_at' | 'user_id'>): Promise<MoodEntry> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
+        const { data, error } = await supabase
+            .from('mood_entries')
+            .insert({ ...mood, user_id: user.id })
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    }
 }; 
