@@ -97,7 +97,7 @@ const Index = () => {
               stiffness: 400,
               damping: 10
             }}>
-                <SidebarTrigger className="mr-2 bg-zinc-400 hover:bg-zinc-300 rounded-3xl" />
+                <SidebarTrigger className="mr-2 rounded-3xl bg-zinc-950 hover:" />
                 <div>
                   
                   
