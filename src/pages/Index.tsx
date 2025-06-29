@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import DashboardHome from "@/components/DashboardHome";
 import VoiceSession from "@/components/VoiceSession";
@@ -18,15 +18,23 @@ const sections = {
 };
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState("dashboard");
-  const ActiveComponent = sections[activeSection as keyof typeof sections];
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Extract current section from URL path (remove leading slash)
+  const currentSection = location.pathname.slice(1) || "dashboard";
+  const ActiveComponent = sections[currentSection as keyof typeof sections] || sections.dashboard;
+
+  const handleSectionChange = (newSection: string) => {
+    navigate(`/${newSection}`);
+  };
 
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full bg-background">
         <AppSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
+          activeSection={currentSection}
+          onSectionChange={handleSectionChange}
         />
         <SidebarInset className="flex-1 w-full">
           <main className="flex-1 w-full h-full overflow-y-auto p-4">

@@ -3,20 +3,24 @@ import { motion } from "framer-motion";
 import { Heart, TrendingUp, Calendar, MessageCircle, Mic, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { moodService } from '@/services/supabase';
 import { processMoodData } from '@/lib/mood-processing';
 
 const quickActions = [{
+  id: "voice",
   icon: Mic,
   label: "Voice Session",
   description: "Start speaking with CalmMind",
   color: "bg-primary/10 hover:bg-primary/20"
 }, {
+  id: "chat",
   icon: MessageCircle,
   label: "Text Chat",
   description: "Type your thoughts and feelings",
   color: "bg-blue-500/10 hover:bg-blue-500/20"
 }, {
+  id: "insights",
   icon: BarChart3,
   label: "View Insights",
   description: "See your mood patterns",
@@ -27,6 +31,7 @@ const DashboardHome = () => {
   const [stats, setStats] = useState([]);
   const [weeklyMoodData, setWeeklyMoodData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMoodData = async () => {
@@ -56,6 +61,19 @@ const DashboardHome = () => {
     </Card>
   );
 
+  const QuickActionCard = ({ id, icon: Icon, label, description, color }) => (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => navigate(`/${id}`)}
+      className={`${color} p-6 rounded-lg cursor-pointer transition-all duration-200`}
+    >
+      <Icon className="w-8 h-8 mb-3 text-foreground" />
+      <h3 className="font-semibold text-foreground mb-1">{label}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
+    </motion.div>
+  );
+
   return (
     <div className="space-y-8 pt-6">
       {/* Welcome Section */}
@@ -69,6 +87,13 @@ const DashboardHome = () => {
       </div>
 
       {loading ? <p>Loading dashboard...</p> : <>
+
+      {/* Quick Actions */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {quickActions.map(action => (
+          <QuickActionCard key={action.id} {...action} />
+        ))}
+      </div>
 
       {/* Stats Cards */}
       <div className="grid md:grid-cols-3 gap-6">
@@ -108,7 +133,7 @@ const DashboardHome = () => {
                 ))}
               </div>
               <div className="mt-6 text-center">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => navigate("/insights")}>
                   View Full Insights
                 </Button>
               </div>
@@ -120,7 +145,7 @@ const DashboardHome = () => {
               <p className="mt-1 text-sm text-muted-foreground">
                 Check in daily to see your mood patterns.
               </p>
-              <Button variant="secondary" className="mt-4" size="sm">
+              <Button variant="secondary" className="mt-4" size="sm" onClick={() => navigate("/journal")}>
                 Start Daily Check-in
               </Button>
             </div>
@@ -140,46 +165,8 @@ const DashboardHome = () => {
           <p className="text-muted-foreground mb-4">
             How are you feeling right now? Take a moment to reflect on your emotions.
           </p>
-          <Button>Start Check-in</Button>
+          <Button onClick={() => navigate("/journal")}>Start Check-in</Button>
         </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl font-medium mb-4">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
-              <Card key={action.label} className={`border-0 ${action.color} cursor-pointer transition-all duration-300`}>
-                <CardContent className="p-6">
-                  <motion.div whileHover={{
-                    rotate: 10
-                  }} transition={{
-                    type: "spring",
-                    stiffness: 400
-                  }}>
-                    <action.icon className="w-8 h-8 text-primary mb-3" />
-                  </motion.div>
-                  <h4 className="font-medium mb-2">{action.label}</h4>
-                  <p className="text-sm text-muted-foreground">{action.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Breathing Animation */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center">
-            <p className="text-sm text-muted-foreground">
-              Take a deep breath. You're exactly where you need to be.
-            </p>
-          </CardTitle>
-        </CardHeader>
       </Card>
     </>}
     </div>

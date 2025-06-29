@@ -2,12 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import AuthPage from "./pages/AuthPage";
-import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -25,14 +24,25 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={session ? <Index /> : <AuthPage />} />
+        {session ? (
+          <>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Index />} />
+            <Route path="/voice" element={<Index />} />
+            <Route path="/chat" element={<Index />} />
+            <Route path="/journal" element={<Index />} />
+            <Route path="/insights" element={<Index />} />
+            <Route path="/settings" element={<Index />} />
+          </>
+        ) : (
+          <Route path="/*" element={<AuthPage />} />
+        )}
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
 };
-
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

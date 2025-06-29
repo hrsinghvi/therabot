@@ -55,9 +55,13 @@ export interface MoodEntry {
 // Database operations
 export const conversationService = {
   async list(): Promise<Conversation[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
     const { data, error } = await supabase
       .from('conversations')
       .select('*')
+      .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
     
     if (error) throw error;
@@ -141,9 +145,13 @@ export const messageService = {
 
 export const journalService = {
     async list(): Promise<JournalEntry[]> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
         const { data, error } = await supabase
             .from('journal_entries')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
         if (error) throw error;
         return data || [];
@@ -161,29 +169,41 @@ export const journalService = {
         return data;
     },
     async update(id: string, entry: Partial<Omit<JournalEntry, 'id' | 'created_at' | 'user_id'>>): Promise<JournalEntry> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
         const { data, error } = await supabase
             .from('journal_entries')
             .update(entry)
             .eq('id', id)
+            .eq('user_id', user.id)
             .select()
             .single();
         if (error) throw error;
         return data;
     },
     async delete(id: string): Promise<void> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
         const { error } = await supabase
             .from('journal_entries')
             .delete()
-            .eq('id', id);
+            .eq('id', id)
+            .eq('user_id', user.id);
         if (error) throw error;
     }
 };
 
 export const dailyCheckinService = {
     async list(): Promise<DailyCheckin[]> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
         const { data, error } = await supabase
             .from('daily_checkins')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
         if (error) throw error;
         return data || [];
@@ -204,9 +224,13 @@ export const dailyCheckinService = {
 
 export const moodService = {
     async list(): Promise<MoodEntry[]> {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+
         const { data, error } = await supabase
             .from('mood_entries')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false });
         if (error) throw error;
         return data || [];
