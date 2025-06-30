@@ -39,39 +39,47 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
     }
 
     setIsSaving(true);
+    
     try {
-      let journalEntry;
+      console.log('Starting to save journal entry...');
+      
       const entryData = {
         title: title.trim(),
         content: content.trim(),
       };
 
+      let journalEntry;
+      
       // Save or update the journal entry first
       if (entry?.id) {
+        console.log('Updating existing entry with ID:', entry.id);
         journalEntry = await journalService.update(entry.id, entryData);
       } else {
+        console.log('Creating new entry...');
         journalEntry = await journalService.create(entryData);
       }
+      
+      console.log('Journal entry saved successfully:', journalEntry.id);
 
-      // Trigger mood analysis using the mood orchestrator
-      try {
-        const moodResult = await moodOrchestrator.handleRealtimeMoodUpdate(
-          'journal', 
-          journalEntry.id, 
-          content, 
-          title
-        );
-        setMoodAnalysis(moodResult.analysis);
-      } catch (error) {
-        console.error('Error analyzing mood:', error);
-        // Don't fail the save if mood analysis fails
-      }
+      // Reset form state
+      setTitle('');
+      setContent('');
+      setMoodAnalysis(null);
 
+      // Call onSave to refresh the list
+      console.log('Refreshing journal list...');
       onSave();
+      
+      // Wait a moment for the refresh to start
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Close the dialog
+      console.log('Closing dialog...');
       onClose();
+      
     } catch (error) {
       console.error('Failed to save entry:', error);
-      alert('Failed to save journal entry. Please try again.');
+      alert(`Failed to save journal entry: ${error.message}. Please try again.`);
     } finally {
       setIsSaving(false);
     }
@@ -160,7 +168,10 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl w-full h-[80vh] bg-card border-border flex flex-col">
+      <DialogContent 
+        key={entry?.id || 'new-entry'}
+        className="sm:max-w-4xl w-full h-[80vh] bg-card border-border flex flex-col"
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {entry?.id ? 'Edit Entry' : 'New Journal Entry'}

@@ -178,26 +178,46 @@ export const messageService = {
 export const journalService = {
     async list(): Promise<JournalEntry[]> {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
+        if (!user) {
+            console.error('No authenticated user found for journal list');
+            throw new Error("User not authenticated");
+        }
 
+        console.log('Fetching journal entries for user:', user.id);
         const { data, error } = await supabase
             .from('journal_entries')
             .select('*')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false });
-        if (error) throw error;
+            
+        if (error) {
+            console.error('Supabase error fetching journal entries:', error);
+            throw error;
+        }
+        
+        console.log('Journal entries fetched:', data?.length || 0);
         return data || [];
     },
     async create(entry: Omit<JournalEntry, 'id' | 'created_at' | 'user_id'>): Promise<JournalEntry> {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("User not authenticated");
+        if (!user) {
+            console.error('No authenticated user found');
+            throw new Error("User not authenticated");
+        }
 
+        console.log('Creating journal entry for user:', user.id);
         const { data, error } = await supabase
             .from('journal_entries')
             .insert([{ ...entry, user_id: user.id }])
             .select()
             .single();
-        if (error) throw error;
+            
+        if (error) {
+            console.error('Supabase error creating journal entry:', error);
+            throw error;
+        }
+        
+        console.log('Journal entry created successfully:', data);
         return data;
     },
     async update(id: string, entry: Partial<Omit<JournalEntry, 'id' | 'created_at' | 'user_id'>>): Promise<JournalEntry> {

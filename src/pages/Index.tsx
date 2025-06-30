@@ -8,6 +8,7 @@ import VoiceSession from "@/components/VoiceSession";
 import { BreathingExercise } from "@/components/BreathingExercise";
 import SettingsPanel from "@/components/SettingsPanel";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import Resources from "@/components/Resources";
 
 const components = {
   dashboard: DashboardHome,
@@ -28,7 +29,10 @@ const Index = () => {
   const currentSection = location.pathname.slice(1) || "dashboard";
   const ActiveComponent = components[currentSection as ComponentKey] || components.dashboard;
 
+  console.log('Index component render - current section:', currentSection, 'path:', location.pathname);
+
   const handleSectionChange = (newSection: string) => {
+    console.log('Section change requested:', newSection);
     navigate(`/${newSection}`);
   };
 
@@ -42,18 +46,10 @@ const Index = () => {
         <SidebarInset className="flex-1 w-full">
           <main className="flex-1 w-full h-full overflow-hidden">
             <div className="w-full max-w-none h-full overflow-y-auto">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentSection}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="w-full h-full p-4"
-                >
-              <ActiveComponent />
-                </motion.div>
-              </AnimatePresence>
+              {/* Temporarily disable AnimatePresence to debug black screen issue */}
+              <div className="w-full h-full p-4">
+                <ActiveComponent />
+              </div>
             </div>
           </main>
         </SidebarInset>

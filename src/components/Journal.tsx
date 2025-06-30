@@ -8,22 +8,30 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { journalService, type JournalEntry } from '@/services/supabase';
 import JournalEntryEditor from './JournalEntryEditor';
+import Resources from "@/components/Resources";
 
 const Journal = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const fetchEntries = useCallback(async () => {
     try {
+      console.log('Fetching journal entries...');
       setLoading(true);
+      setError(null); // Clear any previous errors
       const entries = await journalService.list();
+      console.log('Journal entries fetched:', entries.length);
       setJournalEntries(entries.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
     } catch (error) {
       console.error("Error fetching journal entries:", error);
+      setError(`Failed to load journal entries: ${error.message}`);
     } finally {
       setLoading(false);
+      console.log('Loading set to false');
     }
   }, []);
 
@@ -32,33 +40,41 @@ const Journal = () => {
   }, [fetchEntries]);
   
   const handleNewEntry = () => {
+    console.log('Creating new journal entry...');
     setSelectedEntry(null);
     setIsEditorOpen(true);
   };
 
   const handleEditEntry = (entry: JournalEntry) => {
+    console.log('Editing journal entry:', entry.id);
     setSelectedEntry(entry);
     setIsEditorOpen(true);
   };
 
   const handleCloseEditor = () => {
+    console.log('Closing journal editor...');
     setIsEditorOpen(false);
     setSelectedEntry(null);
   };
 
-  const handleSave = () => {
-    fetchEntries();
+  const handleSave = async () => {
+    console.log('Journal handleSave called, refreshing entries...');
+    setIsSaving(true);
+    try {
+      // Refresh entries immediately
+      await fetchEntries();
+      console.log('Entries refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing entries:', error);
+      setError(`Failed to refresh entries: ${error.message}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }}
-        className="h-full flex flex-col space-y-6 pt-6"
-      >
+      <div className="h-full flex flex-col space-y-6 pt-6">
         <Card className="bg-gradient-to-br from-primary/10 to-transparent">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Today's Reflection</CardTitle>
@@ -80,17 +96,28 @@ const Journal = () => {
             Journal History
           </h2>
           <ScrollArea className="flex-1 pr-4 -mr-4">
-            {loading ? (
-              <p>Loading entries...</p>
+            {error ? (
+              <div className="flex flex-1 items-center justify-center rounded-lg border border-destructive/50 bg-destructive/10 shadow-sm h-full py-24">
+                <div className="flex flex-col items-center gap-1 text-center">
+                  <h3 className="text-2xl font-bold tracking-tight text-destructive">
+                    Error Loading Entries
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {error}
+                  </p>
+                  <Button variant="outline" onClick={fetchEntries}>
+                    Try Again
+                  </Button>
+                </div>
+              </div>
+            ) : loading || isSaving ? (
+              <div className="flex items-center justify-center h-24">
+                <p>{isSaving ? 'Saving entry...' : 'Loading entries...'}</p>
+              </div>
             ) : journalEntries.length > 0 ? (
               <div className="space-y-4">
                 {journalEntries.map((entry, index) => (
-                  <motion.div
-                    key={entry.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                  >
+                  <div key={entry.id}>
                     <Card className="hover:shadow-md transition-shadow group">
                       <CardHeader>
                         <div className="flex justify-between items-start">
@@ -122,7 +149,7 @@ const Journal = () => {
                         )}
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -142,7 +169,7 @@ const Journal = () => {
             )}
           </ScrollArea>
         </div>
-      </motion.div>
+      </div>
 
       <JournalEntryEditor
         entry={selectedEntry}
