@@ -1,10 +1,9 @@
 # TheraBot - AI Mental Health Companion
 
 <div align="center">
-  <img src="public/favicon.ico" alt="TheraBot Logo" width="80" height="80">
-  
-  **A comprehensive mental health and wellness companion powered by AI**
-  
+
+**A comprehensive mental health and wellness companion powered by AI**
+
 </div>
 
 ## 🌟 Overview
