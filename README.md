@@ -5,11 +5,6 @@
   
   **A comprehensive mental health and wellness companion powered by AI**
   
-  [![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue.svg)](https://www.typescriptlang.org/)
-  [![Supabase](https://img.shields.io/badge/Supabase-Database-green.svg)](https://supabase.com/)
-  [![Google Gemini](https://img.shields.io/badge/Google_Gemini-AI-orange.svg)](https://ai.google.dev/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.11-blue.svg)](https://tailwindcss.com/)
 </div>
 
 ## 🌟 Overview
