@@ -61,6 +61,21 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
       
       console.log('Journal entry saved successfully:', journalEntry.id);
 
+      // Trigger mood analysis
+      try {
+        console.log('Triggering mood analysis for entry:', journalEntry.id);
+        await moodOrchestrator.handleRealtimeMoodUpdate(
+          'journal',
+          journalEntry.id,
+          journalEntry.content
+        );
+        console.log('Mood analysis complete.');
+      } catch (analysisError) {
+        console.error('Mood analysis failed:', analysisError);
+        // Non-critical error, so we don't block the user
+        // Maybe show a toast notification in a real app
+      }
+
       // Reset form state
       setTitle('');
       setContent('');

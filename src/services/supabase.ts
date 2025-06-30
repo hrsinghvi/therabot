@@ -84,6 +84,36 @@ export interface DailyMoodSummary {
     created_at: string;
 }
 
+export interface WeeklyPlan {
+  id: string;
+  user_id: string;
+  created_at: string;
+  title: string;
+  description: string;
+  target_area: string;
+  confidence: number;
+  week_of: string;
+  insights: any; // jsonb
+  completed: boolean;
+  exercises?: Exercise[]; // This will be populated after fetching
+}
+
+export interface Exercise {
+  id:string;
+  plan_id: string;
+  user_id: string;
+  created_at: string;
+  title: string;
+  description: string;
+  type: string;
+  duration: number;
+  difficulty: string;
+  completed: boolean;
+  due_date: string;
+  instructions: any; // jsonb
+  benefits: any; // jsonb
+}
+
 // Database operations
 export const conversationService = {
   async list(): Promise<Conversation[]> {
@@ -505,4 +535,93 @@ export const dailyMoodService = {
 
         return await this.upsert(summary);
     }
+};
+
+export const planService = {
+  async list(): Promise<WeeklyPlan[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const { data: plans, error: plansError } = await supabase
+      .from('weekly_plans')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('week_of', { ascending: false });
+    
+    if (plansError) throw plansError;
+    if (!plans) return [];
+
+    // For each plan, fetch its exercises
+    const plansWithExercises = await Promise.all(
+      plans.map(async (plan) => {
+        const { data: exercises, error: exercisesError } = await supabase
+          .from('exercises')
+          .select('*')
+          .eq('plan_id', plan.id)
+          .order('due_date', { ascending: true });
+        
+        if (exercisesError) {
+          console.error(`Error fetching exercises for plan ${plan.id}:`, exercisesError);
+          return { ...plan, exercises: [] };
+        }
+        return { ...plan, exercises: exercises || [] };
+      })
+    );
+
+    return plansWithExercises;
+  },
+
+  async create(plan: Omit<WeeklyPlan, 'id' | 'user_id' | 'created_at' | 'completed' | 'exercises'>, exercises: Omit<Exercise, 'id' | 'plan_id' | 'user_id' | 'created_at' | 'completed'>[]): Promise<WeeklyPlan> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const planPayload = { ...plan, user_id: user.id };
+    const exercisesPayload = exercises.map(e => ({ ...e, user_id: user.id }));
+
+    // Use a transaction to ensure both plan and exercises are created
+    const { data, error } = await supabase.rpc('create_plan_with_exercises', {
+      plan_data: planPayload,
+      exercises_data: exercisesPayload
+    });
+
+    if (error) {
+      console.error('Error creating plan with exercises:', error);
+      throw error;
+    }
+    
+    // The RPC function returns a jsonb object, which needs to be cast back to WeeklyPlan
+    return data as WeeklyPlan;
+  },
+
+  async updateExerciseCompletion(exerciseId: string, completed: boolean): Promise<Exercise> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    const { data, error } = await supabase
+      .from('exercises')
+      .update({ completed })
+      .eq('id', exerciseId)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async updatePlanCompletion(planId: string, completed: boolean): Promise<WeeklyPlan> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+    
+    const { data, error } = await supabase
+      .from('weekly_plans')
+      .update({ completed })
+      .eq('id', planId)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
 }; 

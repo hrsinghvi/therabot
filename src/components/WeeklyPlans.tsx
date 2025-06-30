@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Calendar, 
@@ -28,43 +28,19 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { moodAnalysisService, dailyMoodService } from '@/services/supabase';
+import { moodAnalysisService, planService, type WeeklyPlan as DBWeeklyPlan, type Exercise as DBExercise } from '@/services/supabase';
 import { analyzeMoodFromText } from '@/services/gemini';
-import { planGenerator, type MoodPattern, type GeneratedPlan } from '@/services/planGenerator';
+import { planGenerator, type MoodPattern } from '@/services/planGenerator';
 
-interface WeeklyPlan {
-  id: string;
-  title: string;
-  description: string;
-  targetArea: string;
-  confidence: number;
-  createdAt: string;
-  weekOf: string;
-  exercises: Exercise[];
-  insights: string[];
-  progress: number;
-  completed: boolean;
-}
-
-interface Exercise {
-  id: string;
-  title: string;
-  description: string;
-  type: 'breathing' | 'journaling' | 'mindfulness' | 'behavioral' | 'cognitive' | 'physical';
-  duration: number; // in minutes
-  difficulty: 'easy' | 'medium' | 'hard';
-  completed: boolean;
-  dueDate: string;
-  instructions: string[];
-  benefits: string[];
-}
+// Use the types from Supabase service directly
+type WeeklyPlan = DBWeeklyPlan;
+type Exercise = DBExercise;
 
 interface MoodInsight {
   primaryMood: string;
   frequency: number;
   intensity: number;
   keyEmotions: string[];
-  triggers: string[];
 }
 
 const WeeklyPlans: React.FC = () => {
@@ -75,45 +51,13 @@ const WeeklyPlans: React.FC = () => {
   const [moodInsights, setMoodInsights] = useState<MoodInsight[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadPlansAndInsights();
-  }, []);
-
-  const loadPlansAndInsights = async () => {
-    setLoading(true);
+  const analyzeMoodData = useCallback(async () => {
     try {
-      // Load existing plans from localStorage (in a real app, this would be from the database)
-      const storedPlans = localStorage.getItem('weeklyPlans');
-      if (storedPlans) {
-        const plans = JSON.parse(storedPlans);
-        const current = plans.find((p: WeeklyPlan) => !p.completed && isCurrentWeek(p.weekOf));
-        const past = plans.filter((p: WeeklyPlan) => p.completed || !isCurrentWeek(p.weekOf));
-        
-        setCurrentPlan(current || null);
-        setPastPlans(past);
-      }
-
-      // Analyze recent mood data to generate insights
-      await analyzeMoodData();
-    } catch (error) {
-      console.error('Error loading plans:', error);
-      setError('Failed to load weekly plans');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const analyzeMoodData = async () => {
-    try {
-      // Get recent mood analyses from the past 2 weeks
       const recentAnalyses = await moodAnalysisService.list(50);
-      
-      if (recentAnalyses.length === 0) {
+      if (recentAnalyses.length < 3) { // Require a minimum amount of data
         setMoodInsights([]);
         return;
       }
-
-      // Group by primary mood and analyze patterns
       const moodGroups: { [key: string]: any[] } = {};
       recentAnalyses.forEach(analysis => {
         if (!moodGroups[analysis.primary_mood]) {
@@ -121,36 +65,56 @@ const WeeklyPlans: React.FC = () => {
         }
         moodGroups[analysis.primary_mood].push(analysis);
       });
-
-      // Create insights from the grouped data
       const insights: MoodInsight[] = Object.entries(moodGroups).map(([mood, analyses]) => ({
         primaryMood: mood,
         frequency: analyses.length,
         intensity: analyses.reduce((sum, a) => sum + a.intensity, 0) / analyses.length,
         keyEmotions: [...new Set(analyses.flatMap(a => a.key_emotions || []))].slice(0, 5),
-        triggers: [] // This would be extracted from content analysis in a more advanced implementation
       }));
-
-      // Sort by frequency to identify the most common moods
       insights.sort((a, b) => b.frequency - a.frequency);
       setMoodInsights(insights);
     } catch (error) {
       console.error('Error analyzing mood data:', error);
+      setError('Could not analyze mood patterns.');
     }
-  };
+  }, []);
+
+  const loadPlansAndInsights = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const plans = await planService.list();
+      const current = plans.find((p) => !p.completed && isCurrentWeek(p.week_of));
+      const past = plans.filter((p) => p.completed || !isCurrentWeek(p.week_of));
+      setCurrentPlan(current || null);
+      setPastPlans(past);
+      await analyzeMoodData();
+    } catch (error) {
+      console.error('Error loading plans:', error);
+      setError('Failed to load weekly plans.');
+    } finally {
+      setLoading(false);
+    }
+  }, [analyzeMoodData]);
+
+  useEffect(() => {
+    loadPlansAndInsights();
+  }, [loadPlansAndInsights]);
 
   const generateNewPlan = async () => {
     if (moodInsights.length === 0) {
-      setError('No mood data available to generate a plan. Try using the journal or voice features first.');
+      setError('Not enough mood data to generate a plan. Use the journal or chat features more to build up your mood profile.');
+      return;
+    }
+    if(currentPlan) {
+      setError('You already have an active plan for this week. Complete it before generating a new one.');
       return;
     }
 
     setGenerating(true);
+    setError(null);
     try {
-      // Use the top mood patterns to create a MoodPattern for AI generation
       const topMoodInsight = moodInsights[0];
-      
-      // Get recent journal entries for context
       const recentAnalyses = await moodAnalysisService.list(10);
       const recentEntries = recentAnalyses
         .filter(analysis => analysis.raw_content && analysis.raw_content.length > 20)
@@ -162,90 +126,87 @@ const WeeklyPlans: React.FC = () => {
         frequency: topMoodInsight.frequency,
         intensity: topMoodInsight.intensity,
         keyEmotions: topMoodInsight.keyEmotions,
-        recentEntries: recentEntries
+        recentEntries,
       };
 
-      console.log('Generating AI plan for mood pattern:', moodPattern);
-
-      // Generate plan using AI service
       const generatedPlan = await planGenerator.generateWeeklyPlan(moodPattern);
       
-      // Convert to WeeklyPlan format
       const weekOf = getStartOfWeek(new Date()).toISOString().split('T')[0];
-      const plan: WeeklyPlan = {
-        id: `plan_${Date.now()}`,
+      
+      const planData = {
         title: generatedPlan.title,
         description: generatedPlan.description,
-        targetArea: generatedPlan.targetArea,
+        target_area: generatedPlan.targetArea,
         confidence: generatedPlan.confidence,
-        createdAt: new Date().toISOString(),
-        weekOf,
-        progress: 0,
-        completed: false,
+        week_of: weekOf,
         insights: generatedPlan.insights,
-        exercises: generatedPlan.exercises.map((exercise, index) => ({
-          id: `exercise_${Date.now()}_${index}`,
-          title: exercise.title,
-          description: exercise.description,
-          type: exercise.type,
-          duration: exercise.duration,
-          difficulty: exercise.difficulty,
-          completed: false,
-          dueDate: new Date(Date.now() + (index + 1) * 24 * 60 * 60 * 1000).toISOString(),
-          instructions: exercise.instructions,
-          benefits: exercise.benefits
-        }))
       };
       
-      // Save the plan
-      const allPlans = [...pastPlans, ...(currentPlan ? [currentPlan] : []), plan];
-      localStorage.setItem('weeklyPlans', JSON.stringify(allPlans));
-      
-      setCurrentPlan(plan);
-      console.log('Generated plan:', plan);
+      const exercisesData = generatedPlan.exercises.map((exercise, index) => ({
+        title: exercise.title,
+        description: exercise.description,
+        type: exercise.type,
+        duration: exercise.duration,
+        difficulty: exercise.difficulty,
+        due_date: new Date(Date.now() + (index + 1) * 24 * 60 * 60 * 1000).toISOString(),
+        instructions: exercise.instructions,
+        benefits: exercise.benefits
+      }));
+
+      const newPlan = await planService.create(planData as any, exercisesData as any);
+      setCurrentPlan(newPlan);
+
     } catch (error) {
       console.error('Error generating plan:', error);
-      setError('Failed to generate weekly plan. Please try again.');
+      setError('Failed to generate weekly plan. The AI service may be temporarily unavailable.');
     } finally {
       setGenerating(false);
     }
   };
 
-  const toggleExerciseCompletion = (exerciseId: string) => {
+  const toggleExerciseCompletion = async (exerciseId: string) => {
     if (!currentPlan) return;
 
-    const updatedExercises = currentPlan.exercises.map(exercise =>
-      exercise.id === exerciseId ? { ...exercise, completed: !exercise.completed } : exercise
-    );
+    const exercise = currentPlan.exercises?.find(e => e.id === exerciseId);
+    if (!exercise) return;
 
-    const completedCount = updatedExercises.filter(e => e.completed).length;
-    const progress = (completedCount / updatedExercises.length) * 100;
+    try {
+      const updatedExercise = await planService.updateExerciseCompletion(exerciseId, !exercise.completed);
+      
+      const updatedExercises = currentPlan.exercises!.map(e => e.id === exerciseId ? updatedExercise : e);
+      const completedCount = updatedExercises.filter(e => e.completed).length;
+      const progress = (completedCount / updatedExercises.length) * 100;
+      
+      let updatedPlan = { ...currentPlan, exercises: updatedExercises };
 
-    const updatedPlan = {
-      ...currentPlan,
-      exercises: updatedExercises,
-      progress,
-      completed: progress === 100
-    };
-
-    setCurrentPlan(updatedPlan);
-
-    // Save to localStorage
-    const allPlans = [...pastPlans, updatedPlan];
-    localStorage.setItem('weeklyPlans', JSON.stringify(allPlans));
+      if (progress === 100) {
+        const finishedPlan = await planService.updatePlanCompletion(currentPlan.id, true);
+        updatedPlan = { ...updatedPlan, ...finishedPlan };
+        // Move to past plans
+        setPastPlans(prev => [updatedPlan, ...prev]);
+        setCurrentPlan(null);
+      } else {
+        setCurrentPlan(updatedPlan);
+      }
+    } catch (error) {
+      console.error('Failed to update exercise:', error);
+      setError('Could not update your progress. Please try again.');
+    }
   };
 
   const isCurrentWeek = (weekOf: string): boolean => {
     const weekStart = getStartOfWeek(new Date());
     const planWeekStart = new Date(weekOf);
-    return weekStart.toDateString() === planWeekStart.toDateString();
+    return weekStart.toISOString().split('T')[0] === planWeekStart.toISOString().split('T')[0];
   };
 
   const getStartOfWeek = (date: Date): Date => {
     const start = new Date(date);
-    const day = start.getDay();
-    const diff = start.getDate() - day;
-    return new Date(start.setDate(diff));
+    const day = start.getDay(); // Sunday - 0, Monday - 1, ...
+    const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Adjust to make Monday the first day
+    start.setDate(diff);
+    start.setHours(0, 0, 0, 0);
+    return start;
   };
 
   const getExerciseIcon = (type: string) => {
@@ -468,7 +429,7 @@ const WeeklyPlans: React.FC = () => {
             
             <Button 
               onClick={generateNewPlan} 
-              disabled={generating || moodInsights.length === 0}
+              disabled={generating || !!currentPlan || moodInsights.length === 0}
               size="lg"
             >
               {generating ? (
