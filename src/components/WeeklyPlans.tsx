@@ -209,6 +209,14 @@ const WeeklyPlans: React.FC = () => {
     return start;
   };
 
+  const calculateProgress = (plan: WeeklyPlan): number => {
+    if (!plan.exercises || plan.exercises.length === 0) {
+      return 0;
+    }
+    const completedCount = plan.exercises.filter(e => e.completed).length;
+    return (completedCount / plan.exercises.length) * 100;
+  };
+
   const getExerciseIcon = (type: string) => {
     const icons = {
       breathing: Clock,
@@ -288,14 +296,14 @@ const WeeklyPlans: React.FC = () => {
             </div>
             <div className="flex items-center gap-4 mt-4">
               <div className="flex items-center gap-2">
-                <Progress value={currentPlan.progress} className="w-32" />
+                <Progress value={calculateProgress(currentPlan)} className="w-32" />
                 <span className="text-sm text-muted-foreground">
-                  {Math.round(currentPlan.progress)}% complete
+                  {Math.round(calculateProgress(currentPlan))}% complete
                 </span>
               </div>
               <Badge className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
-                {currentPlan.targetArea}
+                {currentPlan.target_area}
               </Badge>
             </div>
           </CardHeader>
@@ -464,13 +472,13 @@ const WeeklyPlans: React.FC = () => {
                   <div>
                     <h5 className="font-medium">{plan.title}</h5>
                     <p className="text-sm text-muted-foreground">
-                      Week of {new Date(plan.weekOf).toLocaleDateString()}
+                      Week of {new Date(plan.week_of).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Progress value={plan.progress} className="w-20" />
+                    <Progress value={calculateProgress(plan)} className="w-20" />
                     <span className="text-sm text-muted-foreground">
-                      {Math.round(plan.progress)}%
+                      {Math.round(calculateProgress(plan))}%
                     </span>
                     {plan.completed && (
                       <CheckCircle className="w-4 h-4 text-green-600" />
