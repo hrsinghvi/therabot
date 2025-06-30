@@ -2,6 +2,7 @@
 
 <div align="center">
   **A comprehensive mental health and wellness companion powered by AI**
+  ** Submission for Code4Hope Hackathon **
 </div>
 
 ## Founders
