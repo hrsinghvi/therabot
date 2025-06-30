@@ -1,8 +1,9 @@
-# TheraBot - AI Mental Health Companion
+# TheraBot - AI Mental Health Companion (Submission for Code4Hope)
 
 <div align="center">
   **A comprehensive mental health and wellness companion powered by AI**
 </div>
+
 
 ## Founders
 
