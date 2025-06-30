@@ -7,6 +7,7 @@ import TextChat from "@/components/TextChat";
 import VoiceSession from "@/components/VoiceSession";
 import { BreathingExercise } from "@/components/BreathingExercise";
 import SettingsPanel from "@/components/SettingsPanel";
+import Resources from "@/components/Resources";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
 const components = {
@@ -15,6 +16,7 @@ const components = {
   chat: TextChat,
   voice: VoiceSession,
   breathing: BreathingExercise,
+  resources: Resources,
   settings: SettingsPanel,
 };
 

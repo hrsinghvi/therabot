@@ -32,6 +32,7 @@ const AppRoutes = () => {
             <Route path="/chat" element={<Index />} />
             <Route path="/breathing" element={<Index />} />
             <Route path="/journal" element={<Index />} />
+            <Route path="/resources" element={<Index />} />
             <Route path="/settings" element={<Index />} />
           </>
         ) : (
