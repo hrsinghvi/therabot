@@ -132,7 +132,6 @@ therabot/
 │   │   ├── DashboardHome.tsx # Main dashboard with analytics
 │   │   ├── TextChat.tsx    # AI chat interface
 │   │   ├── Journal.tsx     # Journaling component
-│   │   ├── VoiceSession.tsx # Voice therapy UI
 │   │   ├── DailyCheckin.tsx # Daily mood check-in
 │   │   └── UserProfile.tsx # User settings and profile
 │   ├── contexts/           # React contexts for state
@@ -150,8 +149,6 @@ therabot/
 │   ├── services/           # External service integrations
 │   │   ├── supabase.ts     # Database operations
 │   │   ├── gemini.ts       # AI services and mood analysis
-│   │   ├── speechToText.ts # Speech recognition (ready)
-│   │   ├── voiceTherapy.ts # Voice processing (ready)
 │   │   └── mood-orchestrator.ts # Mood data coordination
 │   └── styles/             # CSS and styling
 ├── public/                 # Static assets and icons

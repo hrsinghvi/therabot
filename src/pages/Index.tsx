@@ -2,19 +2,21 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppSidebar } from "@/components/AppSidebar";
 import DashboardHome from "@/components/DashboardHome";
-import VoiceSession from "@/components/VoiceSession";
-import TextChat from "@/components/TextChat";
 import Journal from "@/components/Journal";
+import TextChat from "@/components/TextChat";
+import VoiceSession from "@/components/VoiceSession";
 import SettingsPanel from "@/components/SettingsPanel";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
-const sections = {
+const components = {
   dashboard: DashboardHome,
-  voice: VoiceSession,
-  chat: TextChat,
   journal: Journal,
+  chat: TextChat,
+  voice: VoiceSession,
   settings: SettingsPanel,
 };
+
+type ComponentKey = keyof typeof components;
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const Index = () => {
   
   // Extract current section from URL path (remove leading slash)
   const currentSection = location.pathname.slice(1) || "dashboard";
-  const ActiveComponent = sections[currentSection as keyof typeof sections] || sections.dashboard;
+  const ActiveComponent = components[currentSection as ComponentKey] || components.dashboard;
 
   const handleSectionChange = (newSection: string) => {
     navigate(`/${newSection}`);

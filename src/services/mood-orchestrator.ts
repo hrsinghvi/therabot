@@ -10,55 +10,17 @@ export class MoodOrchestrator {
     /**
      * Analyzes mood from journal entry and stores results
      */
-    async analyzeJournalEntry(entryId: string, content: string, title?: string): Promise<MoodAnalysisEntry> {
-        const context = title ? `Journal entry titled: "${title}"` : undefined;
-        const analysis = await analyzeMoodFromText(content, 'journal', context);
-        
-        // Store the analysis
-        const storedAnalysis = await moodAnalysisService.create(analysis, entryId, content);
-        
-        // Update daily summary
-        const today = new Date().toISOString().split('T')[0];
-        await dailyMoodService.updateFromAnalyses(today);
-        
-        return storedAnalysis;
-    }
-
-    /**
-     * Analyzes mood from voice session content and stores results
-     */
-    async analyzeVoiceSession(sessionId: string, transcript: string): Promise<MoodAnalysisEntry> {
-        const analysis = await analyzeMoodFromText(transcript, 'voice', 'Voice wellness session');
-        
-        // Store the analysis
-        const storedAnalysis = await moodAnalysisService.create(analysis, sessionId, transcript);
-        
-        // Update daily summary
-        const today = new Date().toISOString().split('T')[0];
-        await dailyMoodService.updateFromAnalyses(today);
-        
-        return storedAnalysis;
+    async analyzeJournalEntry(entryId: string, content: string): Promise<MoodAnalysisEntry> {
+        const analysis = await analyzeMoodFromText(content, 'journal');
+        return this.saveAnalysis(analysis, entryId, content);
     }
 
     /**
      * Analyzes mood from chat conversation and stores results
      */
-    async analyzeChatMessage(conversationId: string, userMessage: string, aiResponse?: string): Promise<MoodAnalysisEntry> {
-        // Combine user message and AI response for more context
-        const fullContent = aiResponse 
-            ? `User: ${userMessage}\n\nAssistant: ${aiResponse}`
-            : userMessage;
-        
-        const analysis = await analyzeMoodFromText(userMessage, 'chat', 'Text chat conversation');
-        
-        // Store the analysis
-        const storedAnalysis = await moodAnalysisService.create(analysis, conversationId, fullContent);
-        
-        // Update daily summary
-        const today = new Date().toISOString().split('T')[0];
-        await dailyMoodService.updateFromAnalyses(today);
-        
-        return storedAnalysis;
+    async analyzeChatMessage(messageId: string, content: string): Promise<MoodAnalysisEntry> {
+        const analysis = await analyzeMoodFromText(content, 'chat');
+        return this.saveAnalysis(analysis, messageId, content);
     }
 
     /**
@@ -189,7 +151,7 @@ export class MoodOrchestrator {
     /**
      * Handles real-time mood updates (called after any user interaction)
      */
-    async handleRealtimeMoodUpdate(sourceType: 'journal' | 'voice' | 'chat', sourceId: string, content: string, context?: string): Promise<{
+    async handleRealtimeMoodUpdate(sourceType: 'journal' | 'chat', sourceId: string, content: string, context?: string): Promise<{
         analysis: MoodAnalysisEntry;
         todaysSummary: any;
     }> {
@@ -197,16 +159,13 @@ export class MoodOrchestrator {
 
         switch (sourceType) {
             case 'journal':
-                analysis = await this.analyzeJournalEntry(sourceId, content, context);
-                break;
-            case 'voice':
-                analysis = await this.analyzeVoiceSession(sourceId, content);
+                analysis = await this.analyzeJournalEntry(sourceId, content);
                 break;
             case 'chat':
                 analysis = await this.analyzeChatMessage(sourceId, content);
                 break;
             default:
-                throw new Error(`Unknown source type: ${sourceType}`);
+                throw new Error('Unsupported source type');
         }
 
         const todaysSummary = await this.getTodaysMoodSummary();
@@ -215,6 +174,17 @@ export class MoodOrchestrator {
             analysis,
             todaysSummary
         };
+    }
+
+    private async saveAnalysis(analysis: MoodAnalysis, entryId: string, content: string): Promise<MoodAnalysisEntry> {
+        // Store the analysis
+        const storedAnalysis = await moodAnalysisService.create(analysis, entryId, content);
+        
+        // Update daily summary
+        const today = new Date().toISOString().split('T')[0];
+        await dailyMoodService.updateFromAnalyses(today);
+        
+        return storedAnalysis;
     }
 }
 
