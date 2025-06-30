@@ -211,6 +211,8 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
                   Analyzing your mood...
                 </div>
               )}
+
+              <MoodPreview />
             </div>
             
             <div className="w-[300px] space-y-4">
@@ -222,8 +224,6 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
                 <div className="text-sm text-muted-foreground mb-3">
                   Your mood will be automatically analyzed using AI when you save this entry. This helps track your emotional patterns over time.
                 </div>
-                
-                <MoodPreview />
               </div>
               
               <div className="pt-4 border-t border-border">
