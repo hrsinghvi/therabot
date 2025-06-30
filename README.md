@@ -19,7 +19,7 @@ TheraBot is an empathetic AI-powered mental health companion that provides a saf
 - AI-powered insights that help you understand your emotional patterns
 - Daily mood summaries to track your mental health journey
 
-### 💬 **Therapeutic Chat with "Sage"**
+### 💬 **Therapeutic Chat**
 
 - Conversations with an AI therapist trained in CBT and mindfulness techniques
 - Person-centered therapy approach with unconditional positive regard
@@ -35,12 +35,12 @@ TheraBot is an empathetic AI-powered mental health companion that provides a saf
 
 ### 📊 **Comprehensive Analytics**
 
-- 30-day mood trends and pattern visualization
+- Daily mood trends and pattern visualization
 - Personalized AI-generated insights and recommendations
 - Progress tracking with positive mood indicators
 - Beautiful, easy-to-understand charts and graphs
 
-### 🎤 **Voice Sessions** _(Coming Soon)_
+### 🎤 **Voice Sessions** 
 
 - Voice therapy interface with intuitive controls
 - Speech-to-text integration for hands-free journaling
