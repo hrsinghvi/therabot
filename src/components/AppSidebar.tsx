@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from "framer-motion";
-import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun, Wind, Library } from "lucide-react";
+import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun, Wind, Library, Calendar } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { UserProfile } from "./UserProfile";
 import { Skeleton } from './ui/skeleton';
@@ -20,42 +20,72 @@ interface AppSidebarProps {
   onSectionChange: (section: string) => void;
 }
 
-const navigationItems = [{
-  id: 'dashboard',
-  label: 'Dashboard',
-  icon: Home,
-  description: 'Overview & insights'
-}, {
-  id: 'voice',
-  label: 'Voice Session',
-  icon: Mic,
-  description: 'AI voice session'
-}, {
-  id: 'chat',
-  label: 'Text Chat',
-  icon: MessageCircle,
-  description: 'Written conversation'
-}, {
-  id: 'breathing',
-  label: 'Breathing',
-  icon: Wind,
-  description: 'Guided breathing exercises'
-}, {
-  id: 'journal',
-  label: 'Journal',
-  icon: Book,
-  description: 'Personal reflections'
-}, {
-  id: 'resources',
-  label: 'Resources',
-  icon: Library,
-  description: 'Additional resources'
-}, {
-  id: 'settings',
-  label: 'Settings',
-  icon: Settings,
-  description: 'Preferences & config'
-}];
+const navigationItems = [
+  {
+    id: 'dashboard',
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+    label: 'Dashboard',
+    description: 'Overview & insights'
+  },
+  {
+    id: 'voice',
+    title: "Voice Session",
+    url: "/voice",
+    icon: Mic,
+    label: 'Voice Session',
+    description: 'AI voice session'
+  },
+  {
+    id: 'chat',
+    title: "Text Chat",
+    url: "/chat",
+    icon: MessageCircle,
+    label: 'Text Chat',
+    description: 'Written conversation'
+  },
+  {
+    id: 'journal',
+    title: "Journal",
+    url: "/journal", 
+    icon: BookOpen,
+    label: 'Journal',
+    description: 'Personal reflections'
+  },
+  {
+    id: 'breathing',
+    title: "Breathing",
+    url: "/breathing",
+    icon: Wind,
+    label: 'Breathing',
+    description: 'Guided breathing exercises'
+  },
+  {
+    id: 'plans',
+    title: "Weekly Plans",
+    url: "/plans",
+    icon: Calendar,
+    label: 'Weekly Plans',
+    description: 'AI-powered wellness plans'
+  },
+  {
+    id: 'resources',
+    title: "Resources",
+    url: "/resources",
+    icon: Library,
+    label: 'Resources',
+    description: 'Additional resources'
+  },
+  {
+    id: 'settings',
+    title: "Settings",
+    url: "/settings",
+    icon: Settings,
+    label: 'Settings',
+    description: 'Preferences & config'
+  },
+];
 
 // Helper function to get user initials
 const getInitials = (name: string) => {

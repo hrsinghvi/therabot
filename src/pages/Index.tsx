@@ -9,6 +9,7 @@ import { BreathingExercise } from "@/components/BreathingExercise";
 import SettingsPanel from "@/components/SettingsPanel";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import Resources from "@/components/Resources";
+import WeeklyPlans from "@/components/WeeklyPlans";
 
 const components = {
   dashboard: DashboardHome,
@@ -17,6 +18,7 @@ const components = {
   voice: VoiceSession,          
   breathing: BreathingExercise,
   resources: Resources,
+  plans: WeeklyPlans,
   settings: SettingsPanel,
 };
 

@@ -33,6 +33,7 @@ const AppRoutes = () => {
             <Route path="/breathing" element={<Index />} />
             <Route path="/journal" element={<Index />} />
             <Route path="/resources" element={<Index />} />
+            <Route path="/plans" element={<Index />} />
             <Route path="/settings" element={<Index />} />
           </>
         ) : (
