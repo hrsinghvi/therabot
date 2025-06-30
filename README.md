@@ -4,11 +4,20 @@
   **A comprehensive mental health and wellness companion powered by AI**
 </div>
 
+##Founders
+
+- Hritvik Singhvi - Dougherty Valley High School - 06/30/2025
+- Vedo Bhomik - Dougherty Valley High School - 06/30/2025
+- Varenya Garg - Dougherty Valley High School - 06/30/2025
+- Rijul Rajput - Dougherty Valley High School - 06/30/2025
+
+## Category
+
+Health and Wellness
+
 ## 🌟 What is TheraBot?
 
 TheraBot is an empathetic AI-powered mental health companion that provides a safe, supportive digital space for users to explore their thoughts, track emotional patterns, and receive personalized insights about their mental well-being. Built with modern web technologies and professional therapeutic principles, TheraBot makes mental health support accessible to everyone.
-
-**🚨 Important**: TheraBot is a supportive tool designed to complement, not replace, professional mental health care. If you're experiencing a mental health crisis, please contact a professional immediately.
 
 ## ✨ Key Features
 
