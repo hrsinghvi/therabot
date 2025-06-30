@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from "framer-motion";
-import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun } from "lucide-react";
+import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun, Wind } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { UserProfile } from "./UserProfile";
 import { Skeleton } from './ui/skeleton';
@@ -35,6 +35,11 @@ const navigationItems = [{
   label: 'Text Chat',
   icon: MessageCircle,
   description: 'Written conversation'
+}, {
+  id: 'breathing',
+  label: 'Breathing',
+  icon: Wind,
+  description: 'Guided breathing exercises'
 }, {
   id: 'journal',
   label: 'Journal',

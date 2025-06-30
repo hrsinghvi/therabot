@@ -5,6 +5,7 @@ import DashboardHome from "@/components/DashboardHome";
 import Journal from "@/components/Journal";
 import TextChat from "@/components/TextChat";
 import VoiceSession from "@/components/VoiceSession";
+import { BreathingExercise } from "@/components/BreathingExercise";
 import SettingsPanel from "@/components/SettingsPanel";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
@@ -13,6 +14,7 @@ const components = {
   journal: Journal,
   chat: TextChat,
   voice: VoiceSession,
+  breathing: BreathingExercise,
   settings: SettingsPanel,
 };
 

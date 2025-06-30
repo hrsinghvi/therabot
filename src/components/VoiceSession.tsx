@@ -45,7 +45,7 @@ const VoiceSession = () => {
     }
   };
 
-  return (
+    return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -65,24 +65,24 @@ const VoiceSession = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
               {getStatusIndicator()}
               {conversationHistory.length > 0 && (
                 <Badge variant="outline" className="text-xs">
                   <Sparkles className="w-3 h-3 mr-1" />
                   {Math.floor(conversationHistory.length / 2)} exchanges
-                </Badge>
+              </Badge>
               )}
             </div>
           </div>
           
           {error && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          </Alert>
+        )}
         </CardContent>
       </Card>
 
@@ -158,7 +158,7 @@ const VoiceSession = () => {
             </Button>
             
             {conversationHistory.length > 0 && (
-              <Button 
+              <Button
                 onClick={endSession} 
                 variant="destructive"
                 className="w-full sm:w-auto"
@@ -168,13 +168,13 @@ const VoiceSession = () => {
                 <span className="ml-2">End Session</span>
               </Button>
             )}
-          </div>
-          
+        </div>
+
           <div className="mt-4 text-center text-sm text-muted-foreground">
             Click "Start Listening" to speak, then click again to stop and get a response
           </div>
-        </CardContent>
-      </Card>
+      </CardContent>
+    </Card>
     </motion.div>
   );
 };
