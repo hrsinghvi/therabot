@@ -152,7 +152,6 @@ therabot/
 │   │   └── mood-orchestrator.ts # Mood data coordination
 │   └── styles/             # CSS and styling
 ├── public/                 # Static assets and icons
-├── backend/                # Optional Express.js backend
 └── docs/                   # Documentation files
 ```
 
