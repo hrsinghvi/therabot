@@ -1,105 +1,126 @@
 # TheraBot - AI Mental Health Companion
 
 <div align="center">
-
-**A comprehensive mental health and wellness companion powered by AI**
-
+  **A comprehensive mental health and wellness companion powered by AI**
 </div>
 
-## 🌟 Overview
+## 🌟 What is TheraBot?
 
-TheraBot is an empathetic AI-powered mental health companion that provides a safe, supportive digital space for users to explore their thoughts, track emotional patterns, and receive personalized insights about their mental well-being. Built with modern web technologies and professional therapeutic principles.
+TheraBot is an empathetic AI-powered mental health companion that provides a safe, supportive digital space for users to explore their thoughts, track emotional patterns, and receive personalized insights about their mental well-being. Built with modern web technologies and professional therapeutic principles, TheraBot makes mental health support accessible to everyone.
 
-### ✨ Key Features
+**🚨 Important**: TheraBot is a supportive tool designed to complement, not replace, professional mental health care. If you're experiencing a mental health crisis, please contact a professional immediately.
 
-- **🧠 AI-Powered Mood Analysis** - Real-time emotional state detection from text
-- **💬 Therapeutic Chat** - Conversations with "Sage," an AI therapist using CBT and mindfulness techniques
-- **📝 Intelligent Journaling** - Rich text editor with automatic mood tracking
-- **📊 Comprehensive Analytics** - 30-day mood trends and personalized insights
-- **🎤 Voice Sessions** - Voice therapy interface (UI ready for speech integration)
-- **🔒 Privacy-First** - End-to-end encryption with Supabase Row Level Security
-- **📱 Responsive Design** - Beautiful, accessible interface across all devices
+## ✨ Key Features
 
-## 🚀 Quick Start
+### 🧠 **Intelligent Mood Analysis**
 
-### Prerequisites
+- Real-time emotional state detection from your written thoughts
+- 7 comprehensive mood categories with intensity scoring
+- AI-powered insights that help you understand your emotional patterns
+- Daily mood summaries to track your mental health journey
 
-- **Node.js** (v18 or higher)
-- **npm** or **yarn** package manager
-- **Supabase account** for database
-- **Google Gemini API key** for AI features
+### 💬 **Therapeutic Chat with "Sage"**
 
-### Installation
+- Conversations with an AI therapist trained in CBT and mindfulness techniques
+- Person-centered therapy approach with unconditional positive regard
+- Crisis intervention protocols for safety
+- Persistent chat history to track your progress over time
 
-1. **Clone the repository**
+### 📝 **Smart Journaling**
 
-   ```bash
-   git clone https://github.com/yourusername/therabot.git
-   cd therabot
-   ```
+- Rich text editor for personal reflections and thoughts
+- Automatic mood analysis of your journal entries
+- Historical entry management with search capabilities
+- Daily check-in prompts for consistent self-reflection
 
-2. **Install dependencies**
+### 📊 **Comprehensive Analytics**
 
-   ```bash
-   npm install
-   ```
+- 30-day mood trends and pattern visualization
+- Personalized AI-generated insights and recommendations
+- Progress tracking with positive mood indicators
+- Beautiful, easy-to-understand charts and graphs
 
-3. **Set up environment variables**
+### 🎤 **Voice Sessions** _(Coming Soon)_
 
-   ```bash
-   cp .env.example .env
-   ```
+- Voice therapy interface with intuitive controls
+- Speech-to-text integration for hands-free journaling
+- Mood analysis from voice transcripts
 
-   Edit `.env` with your credentials:
+### 🔒 **Privacy & Security First**
 
-   ```env
-   # Supabase Configuration
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+- End-to-end encryption for all your personal data
+- Complete user data isolation with advanced security policies
+- GDPR-compliant data handling
+- You own and control all your data
 
-   # Google Gemini AI
-   VITE_GEMINI_API_KEY=your_gemini_api_key
-   ```
+## 🎯 Who is TheraBot For?
 
-4. **Set up the database**
+- **Individuals** seeking to better understand their emotional patterns
+- **People** looking for accessible mental health support tools
+- **Anyone** interested in mindfulness and self-reflection practices
+- **Students and professionals** managing stress and anxiety
+- **Those** who want to track their mental health journey over time
 
-   - Create a new Supabase project
-   - Run the database schema (see [Database Setup](#database-setup))
-   - Enable Row Level Security policies
+## 🌈 The TheraBot Experience
 
-5. **Start the development server**
+### Beautiful, Calming Design
 
-   ```bash
-   npm run dev
-   ```
+- Soft color palette designed for emotional comfort
+- Smooth animations that feel natural and soothing
+- Responsive design that works on all your devices
+- Accessibility features following WCAG guidelines
 
-6. **Open your browser**
-   Navigate to `http://localhost:8080`
+### Intelligent AI That Understands
 
-## 🏗️ Architecture
+- Advanced mood detection using Google Gemini AI
+- Contextual understanding of your emotional state
+- Personalized recommendations based on your patterns
+- Therapeutic responses grounded in proven methodologies
 
-### Tech Stack
+### Your Data, Your Privacy
 
-**Frontend:**
+- All conversations and journal entries are completely private
+- Advanced encryption protects your sensitive information
+- Row-level security ensures complete data isolation
+- No data sharing with third parties
 
-- **React 18.3.1** with TypeScript
-- **Vite** for fast development and building
-- **Tailwind CSS** for styling
-- **Shadcn/ui** component library
-- **Framer Motion** for animations
-- **React Query** for state management
+## 🚀 Getting Started
 
-**Backend & Database:**
+### For Users
 
-- **Supabase** (PostgreSQL) for database and authentication
-- **Row Level Security (RLS)** for data privacy
-- **Real-time subscriptions** for live updates
+1. **Visit TheraBot** at [your-deployed-url.com]
+2. **Create your account** with secure email verification
+3. **Start your journey** with a daily mood check-in
+4. **Explore features** like journaling, AI chat, and analytics
+5. **Track your progress** with beautiful mood visualizations
 
-**AI & Services:**
+### For Developers & Contributors
 
-- **Google Gemini API** for mood analysis and therapeutic chat
-- **Speech-to-Text** integration ready
-- **Crisis intervention** protocols
+TheraBot is open source! We welcome contributions from developers who want to help make mental health support more accessible.
+
+## 🏗️ Tech Stack & Architecture
+
+### Frontend Technologies
+
+- **React 18.3.1** with TypeScript for type-safe development
+- **Vite** for fast development and optimized builds
+- **Tailwind CSS** for utility-first styling
+- **Shadcn/ui** for beautiful, accessible components
+- **Framer Motion** for smooth animations
+- **React Query** for efficient state management
+
+### Backend & Database
+
+- **Supabase** (PostgreSQL) for database and real-time features
+- **Row Level Security (RLS)** for data privacy and isolation
+- **Supabase Auth** for secure user authentication
+- **Real-time subscriptions** for live data updates
+
+### AI & Services
+
+- **Google Gemini API** for advanced mood analysis and therapeutic chat
+- **Speech-to-Text** integration ready for voice features
+- **Crisis intervention** protocols and safety measures
 
 ### Project Structure
 
@@ -107,325 +128,153 @@ TheraBot is an empathetic AI-powered mental health companion that provides a saf
 therabot/
 ├── src/
 │   ├── components/          # React components
-│   │   ├── ui/             # Shadcn/ui components
+│   │   ├── ui/             # Shadcn/ui component library
 │   │   ├── AppSidebar.tsx  # Navigation sidebar
-│   │   ├── DashboardHome.tsx # Main dashboard
+│   │   ├── DashboardHome.tsx # Main dashboard with analytics
 │   │   ├── TextChat.tsx    # AI chat interface
 │   │   ├── Journal.tsx     # Journaling component
-│   │   └── VoiceSession.tsx # Voice therapy UI
-│   ├── contexts/           # React contexts
-│   │   └── AuthContext.tsx # Authentication state
+│   │   ├── VoiceSession.tsx # Voice therapy UI
+│   │   ├── DailyCheckin.tsx # Daily mood check-in
+│   │   └── UserProfile.tsx # User settings and profile
+│   ├── contexts/           # React contexts for state
+│   │   └── AuthContext.tsx # Authentication state management
 │   ├── hooks/              # Custom React hooks
+│   │   ├── use-mobile.tsx  # Mobile detection
+│   │   └── use-toast.ts    # Toast notifications
 │   ├── lib/                # Utility libraries
 │   │   ├── utils.ts        # General utilities
-│   │   └── mood-processing.ts # Mood analytics
+│   │   └── mood-processing.ts # Mood analytics logic
 │   ├── pages/              # Page components
-│   │   ├── Index.tsx       # Main app page
-│   │   ├── AuthPage.tsx    # Login/signup
-│   │   └── NotFound.tsx    # 404 page
+│   │   ├── Index.tsx       # Main application page
+│   │   ├── AuthPage.tsx    # Login and signup
+│   │   └── NotFound.tsx    # 404 error page
 │   ├── services/           # External service integrations
 │   │   ├── supabase.ts     # Database operations
-│   │   ├── gemini.ts       # AI services
-│   │   ├── speechToText.ts # Speech recognition
-│   │   └── voiceTherapy.ts # Voice processing
-│   └── styles/             # CSS files
+│   │   ├── gemini.ts       # AI services and mood analysis
+│   │   ├── speechToText.ts # Speech recognition (ready)
+│   │   ├── voiceTherapy.ts # Voice processing (ready)
+│   │   └── mood-orchestrator.ts # Mood data coordination
+│   └── styles/             # CSS and styling
+├── public/                 # Static assets and icons
 ├── backend/                # Optional Express.js backend
-├── public/                 # Static assets
-└── docs/                   # Documentation
+└── docs/                   # Documentation files
 ```
 
-## 🔧 Database Setup
+**Want to contribute?** Check out our [Contributing Guide](CONTRIBUTING.md) to get started.
 
-### Required Tables
+## 🛡️ Safety & Professional Standards
 
-Create these tables in your Supabase project:
+### Crisis Intervention
 
-```sql
--- Conversations table
-CREATE TABLE conversations (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+- Automatic detection of crisis-related language
+- Immediate redirection to professional resources
+- Clear boundaries about AI limitations
+- Integration with crisis hotlines (988, 111)
 
--- Messages table
-CREATE TABLE messages (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
-  role TEXT NOT NULL CHECK (role IN ('user', 'model')),
-  content TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+### Therapeutic Approach
 
--- Journal entries table
-CREATE TABLE journal_entries (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  content TEXT NOT NULL,
-  mood TEXT,
-  ai_analysis TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+- Grounded in evidence-based therapeutic practices
+- Person-centered therapy principles
+- Cognitive behavioral therapy techniques
+- Mindfulness and grounding exercises
 
--- Mood analysis entries
-CREATE TABLE mood_analysis_entries (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  source TEXT NOT NULL CHECK (source IN ('journal', 'voice', 'chat')),
-  source_id UUID NOT NULL,
-  primary_mood TEXT NOT NULL,
-  secondary_mood TEXT,
-  intensity INTEGER CHECK (intensity >= 1 AND intensity <= 10),
-  confidence DECIMAL CHECK (confidence >= 0 AND confidence <= 1),
-  reasoning TEXT,
-  key_emotions TEXT[],
-  raw_content TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+### Professional Boundaries
 
--- Daily mood summaries
-CREATE TABLE daily_mood_summaries (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  date DATE NOT NULL,
-  primary_mood TEXT NOT NULL,
-  secondary_mood TEXT,
-  average_intensity DECIMAL,
-  overall_confidence DECIMAL,
-  reasoning TEXT,
-  key_emotions TEXT[],
-  analysis_count INTEGER DEFAULT 0,
-  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(user_id, date)
-);
-```
+- Clear disclaimers about AI limitations
+- Never claims to replace professional therapy
+- Encourages professional help when appropriate
+- Maintains ethical therapeutic boundaries
 
-### Row Level Security (RLS) Policies
+## 📊 How TheraBot Analyzes Your Mood
 
-```sql
--- Enable RLS on all tables
-ALTER TABLE conversations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE mood_analysis_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE daily_mood_summaries ENABLE ROW LEVEL SECURITY;
+### 7 Core Mood Categories
 
--- Create policies (users can only access their own data)
-CREATE POLICY "Users can manage their own conversations" ON conversations
-  FOR ALL USING (auth.uid() = user_id);
+- **Happy**: Joyful, content, positive emotions
+- **Peaceful**: Calm, serene, relaxed states
+- **Excited**: Energetic, enthusiastic, motivated feelings
+- **Sad**: Down, melancholy, sorrowful emotions
+- **Anxious**: Worried, nervous, stressed states
+- **Frustrated**: Irritated, annoyed, overwhelmed feelings
+- **Neutral**: Balanced, stable, unremarkable moods
 
-CREATE POLICY "Users can manage their own messages" ON messages
-  FOR ALL USING (auth.uid() IN (
-    SELECT user_id FROM conversations WHERE id = conversation_id
-  ));
+### Analysis Sources
 
-CREATE POLICY "Users can manage their own journal entries" ON journal_entries
-  FOR ALL USING (auth.uid() = user_id);
+- **Journal Entries**: Deep analysis of your written reflections
+- **Chat Conversations**: Understanding from your AI therapy sessions
+- **Daily Check-ins**: Regular mood tracking data
+- **Voice Sessions**: Future speech-to-text analysis capabilities
 
-CREATE POLICY "Users can manage their own mood analyses" ON mood_analysis_entries
-  FOR ALL USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can manage their own mood summaries" ON daily_mood_summaries
-  FOR ALL USING (auth.uid() = user_id);
-```
-
-## 🤖 AI Features
-
-### Mood Analysis System
-
-TheraBot uses Google Gemini to analyze emotional states from text with:
-
-- **7 Core Mood Categories**: Happy, Peaceful, Excited, Sad, Anxious, Frustrated, Neutral
-- **Intensity Scoring**: 1-10 scale for emotional intensity
-- **Confidence Levels**: AI confidence in analysis (0-1 scale)
-- **Key Emotions**: Extracted emotional keywords
-- **Contextual Reasoning**: Explanation of mood determination
-
-### Therapeutic Chat
-
-"Sage" the AI therapist provides:
-
-- **Person-Centered Therapy** approach with unconditional positive regard
-- **Cognitive Behavioral Therapy** techniques for thought pattern recognition
-- **Mindfulness practices** for grounding and present-moment awareness
-- **Crisis intervention** with immediate professional resource redirection
-- **Conversation history** with intelligent title generation
-
-### Safety Protocols
-
-- **Crisis Detection**: Automatic identification of crisis keywords
-- **Professional Boundaries**: Clear AI limitations and disclaimers
-- **Resource Redirection**: Immediate connection to crisis hotlines (988, 111)
-- **Data Privacy**: GDPR-compliant data handling with encryption
-
-## 📊 Analytics & Insights
-
-### Dashboard Features
-
-- **Today's Mood Summary**: Current emotional state with confidence indicators
-- **30-Day Trends**: Visual mood patterns and progress tracking
-- **AI-Generated Insights**: Personalized recommendations based on patterns
-- **Activity Tracking**: Journal entries, chat sessions, and voice sessions
-- **Progress Indicators**: Positive mood percentage and trend analysis
-
-### Mood Processing Pipeline
-
-1. **Real-time Analysis**: Text analyzed immediately upon input
-2. **Daily Aggregation**: Multiple analyses combined into daily summaries
-3. **Trend Calculation**: Weekly and monthly pattern recognition
-4. **Insight Generation**: AI-powered personalized recommendations
-5. **Visual Representation**: Charts and graphs for easy understanding
-
-## 🎨 UI/UX Design
-
-### Design Philosophy
-
-- **Calm & Welcoming**: Soft color palette with soothing gradients
-- **Accessibility First**: WCAG compliant with keyboard navigation
-- **Responsive Design**: Optimized for mobile, tablet, and desktop
-- **Smooth Animations**: Framer Motion for emotional comfort
-- **Intuitive Navigation**: Clear visual hierarchy and user flow
-
-### Color Scheme
-
-- **Primary**: `#4E85A2` (Calming blue)
-- **Background**: Dark theme with warm accents
-- **Mood Colors**: Contextual colors for different emotional states
-- **Status Indicators**: Green for positive, amber for neutral, red for concerning
-
-## 🔐 Security & Privacy
-
-### Data Protection
-
-- **End-to-End Encryption**: All data encrypted at rest and in transit
-- **Row Level Security**: Database-level access control
-- **User Isolation**: Complete data separation between users
-- **GDPR Compliance**: Right to deletion and data portability
-
-### Authentication
-
-- **Supabase Auth**: Industry-standard authentication system
-- **Email Verification**: Required for account activation
-- **Session Management**: Secure token-based sessions
-- **Password Security**: Bcrypt hashing with salt
-
-## 🚀 Deployment
-
-### Development
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
-```
-
-### Production Deployment
-
-1. **Build the application**
-
-   ```bash
-   npm run build
-   ```
-
-2. **Deploy to your hosting platform**
-
-   - **Vercel**: Connect GitHub repository for automatic deployments
-   - **Netlify**: Drag and drop `dist` folder or connect repository
-   - **AWS S3**: Upload `dist` contents to S3 bucket with CloudFront
-
-3. **Environment Variables**
-   Set production environment variables in your hosting platform:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_GEMINI_API_KEY`
-
-### Backend (Optional)
-
-If using the Express.js backend:
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-npm test              # Run unit tests
-npm run test:e2e      # Run end-to-end tests
-npm run test:coverage # Generate coverage report
-```
-
-### Test Coverage
-
-- **Components**: Unit tests for all React components
-- **Services**: Integration tests for API services
-- **Database**: Tests for Supabase operations
-- **AI Features**: Mock tests for Gemini integration
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Standards
-
-- **TypeScript**: Strict type checking enabled
-- **ESLint**: Code linting with React hooks rules
-- **Prettier**: Code formatting (configured in `.prettierrc`)
-- **Conventional Commits**: Semantic commit messages
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
+## 🌍 Community & Support
 
 ### Getting Help
 
-- **Documentation**: Check the [docs](docs/) folder for detailed guides
-- **Issues**: Report bugs on [GitHub Issues](https://github.com/yourusername/therabot/issues)
-- **Discussions**: Join community discussions on [GitHub Discussions](https://github.com/yourusername/therabot/discussions)
+- **Documentation**: Comprehensive guides and tutorials
+- **Community**: Join discussions with other users
+- **Support**: Technical support for any issues
+- **Feedback**: Help us improve TheraBot with your suggestions
 
 ### Crisis Resources
 
 If you're experiencing a mental health crisis:
 
-- **US**: Call 988 (Suicide & Crisis Lifeline)
-- **UK**: Call 111 (NHS 111)
+- **US**: Call or text 988 (Suicide & Crisis Lifeline)
+- **UK**: Call 111 (NHS 111) or text SHOUT to 85258
+- **Canada**: Call 1-833-456-4566
 - **International**: Visit [findahelpline.com](https://findahelpline.com)
 
-**Remember**: TheraBot is a supportive tool, not a replacement for professional mental health care.
+**Remember**: TheraBot is here to support you, but professional help is always available when you need it.
+
+## 🤝 Contributing to TheraBot
+
+We believe mental health support should be accessible to everyone. If you're a developer, designer, mental health professional, or just someone passionate about this cause, we'd love your help!
+
+### Ways to Contribute
+
+- **Code**: Help improve features and fix bugs
+- **Design**: Make TheraBot more beautiful and accessible
+- **Documentation**: Help others understand and use TheraBot
+- **Testing**: Ensure TheraBot works perfectly for everyone
+- **Feedback**: Share your ideas for new features
+
+### Development Setup
+
+1. Fork the repository
+2. Clone your fork locally
+3. Install dependencies with `npm install`
+4. Set up your environment variables
+5. Start the development server with `npm run dev`
+
+See our [Contributing Guide](CONTRIBUTING.md) for detailed instructions.
+
+## 📜 License & Legal
+
+TheraBot is open source software licensed under the [MIT License](LICENSE). This means:
+
+- ✅ You can use TheraBot for personal or commercial purposes
+- ✅ You can modify and distribute the code
+- ✅ You can contribute improvements back to the community
+- ✅ No warranty is provided - use at your own risk
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini** for powerful AI capabilities
-- **Supabase** for excellent backend-as-a-service
-- **Shadcn/ui** for beautiful, accessible components
-- **The mental health community** for guidance on therapeutic approaches
+TheraBot is built with love and powered by:
+
+- **Google Gemini** for advanced AI capabilities
+- **Supabase** for secure, scalable backend infrastructure
+- **The Open Source Community** for incredible tools and libraries
+- **Mental Health Professionals** who guided our therapeutic approach
+- **Our Contributors** who help make mental health support accessible
 
 ---
 
 <div align="center">
   <p><strong>Built with ❤️ for mental health and wellness</strong></p>
   <p>
-    <a href="https://github.com/yourusername/therabot">⭐ Star us on GitHub</a> •
-    <a href="https://github.com/yourusername/therabot/issues">🐛 Report Bug</a> •
-    <a href="https://github.com/yourusername/therabot/issues">✨ Request Feature</a>
+    <a href="#-getting-started">🚀 Get Started</a> •
+    <a href="CONTRIBUTING.md">🤝 Contribute</a> •
+    <a href="#-community--support">💬 Get Help</a> •
+    <a href="#crisis-resources">🆘 Crisis Resources</a>
   </p>
+  
+  <p><em>Your mental health matters. You matter. We're here to help.</em></p>
 </div>
