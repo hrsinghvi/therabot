@@ -4,7 +4,7 @@
   **A comprehensive mental health and wellness companion powered by AI**
 </div>
 
-##Founders
+## Founders
 
 - Hritvik Singhvi - Dougherty Valley High School - 06/30/2025
 - Vedo Bhomik - Dougherty Valley High School - 06/30/2025
