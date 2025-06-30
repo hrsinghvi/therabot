@@ -2,9 +2,10 @@
 
 <div align="center">
   **A comprehensive mental health and wellness companion powered by AI**
+</div>
+<div align="center">
   ** Submission for Code4Hope Hackathon **
 </div>
-
 ## Founders
 
 - Hritvik Singhvi - Dougherty Valley High School - 06/30/2025
