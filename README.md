@@ -88,15 +88,14 @@ TheraBot is an empathetic AI-powered mental health companion that provides a saf
 
 ### For Users
 
-1. **Visit TheraBot** at [your-deployed-url.com]
-2. **Create your account** with secure email verification
-3. **Start your journey** with a daily mood check-in
-4. **Explore features** like journaling, AI chat, and analytics
-5. **Track your progress** with beautiful mood visualizations
+1. **Create your account** with secure email verification
+2. **Start your journey** with a daily mood check-in
+3. **Explore features** like journaling, AI chat, and analytics
+4. **Track your progress** with beautiful mood visualizations
 
-### For Developers & Contributors
+### For Developers
 
-TheraBot is open source! We welcome contributions from developers who want to help make mental health support more accessible.
+TheraBot is built with modern web technologies and follows best practices for mental health applications.
 
 ## 🏗️ Tech Stack & Architecture
 
@@ -160,7 +159,7 @@ therabot/
 └── docs/                   # Documentation files
 ```
 
-**Want to contribute?** Check out our [Contributing Guide](CONTRIBUTING.md) to get started.
+This architecture ensures scalability, security, and a smooth user experience.
 
 ## 🛡️ Safety & Professional Standards
 
@@ -204,14 +203,13 @@ therabot/
 - **Daily Check-ins**: Regular mood tracking data
 - **Voice Sessions**: Future speech-to-text analysis capabilities
 
-## 🌍 Community & Support
+## 🌍 Support
 
 ### Getting Help
 
-- **Documentation**: Comprehensive guides and tutorials
-- **Community**: Join discussions with other users
-- **Support**: Technical support for any issues
-- **Feedback**: Help us improve TheraBot with your suggestions
+- **Documentation**: Comprehensive user guides and tutorials
+- **Support**: Technical support for any issues you encounter
+- **Feedback**: We value your input to improve TheraBot
 
 ### Crisis Resources
 
@@ -224,36 +222,9 @@ If you're experiencing a mental health crisis:
 
 **Remember**: TheraBot is here to support you, but professional help is always available when you need it.
 
-## 🤝 Contributing to TheraBot
+## 💡 About TheraBot Development
 
-We believe mental health support should be accessible to everyone. If you're a developer, designer, mental health professional, or just someone passionate about this cause, we'd love your help!
-
-### Ways to Contribute
-
-- **Code**: Help improve features and fix bugs
-- **Design**: Make TheraBot more beautiful and accessible
-- **Documentation**: Help others understand and use TheraBot
-- **Testing**: Ensure TheraBot works perfectly for everyone
-- **Feedback**: Share your ideas for new features
-
-### Development Setup
-
-1. Fork the repository
-2. Clone your fork locally
-3. Install dependencies with `npm install`
-4. Set up your environment variables
-5. Start the development server with `npm run dev`
-
-See our [Contributing Guide](CONTRIBUTING.md) for detailed instructions.
-
-## 📜 License & Legal
-
-TheraBot is open source software licensed under the [MIT License](LICENSE). This means:
-
-- ✅ You can use TheraBot for personal or commercial purposes
-- ✅ You can modify and distribute the code
-- ✅ You can contribute improvements back to the community
-- ✅ No warranty is provided - use at your own risk
+TheraBot is designed with accessibility and user privacy at its core. The application follows industry best practices for mental health applications and maintains the highest standards for data security and user safety.
 
 ## 🙏 Acknowledgments
 
@@ -263,18 +234,10 @@ TheraBot is built with love and powered by:
 - **Supabase** for secure, scalable backend infrastructure
 - **The Open Source Community** for incredible tools and libraries
 - **Mental Health Professionals** who guided our therapeutic approach
-- **Our Contributors** who help make mental health support accessible
 
 ---
 
 <div align="center">
   <p><strong>Built with ❤️ for mental health and wellness</strong></p>
-  <p>
-    <a href="#-getting-started">🚀 Get Started</a> •
-    <a href="CONTRIBUTING.md">🤝 Contribute</a> •
-    <a href="#-community--support">💬 Get Help</a> •
-    <a href="#crisis-resources">🆘 Crisis Resources</a>
-  </p>
-  
   <p><em>Your mental health matters. You matter. We're here to help.</em></p>
 </div>
