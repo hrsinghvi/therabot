@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from "framer-motion";
-import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun, Wind } from "lucide-react";
+import { Home, Mic, MessageCircle, BarChart3, Settings, ChevronRight, Heart, Book, Bell, LineChart, Package, Users, MessageSquare, BookOpen, LogOut, Moon, Sun, Wind, Library } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { UserProfile } from "./UserProfile";
 import { Skeleton } from './ui/skeleton';
@@ -45,6 +45,11 @@ const navigationItems = [{
   label: 'Journal',
   icon: Book,
   description: 'Personal reflections'
+}, {
+  id: 'resources',
+  label: 'Resources',
+  icon: Library,
+  description: 'Additional resources'
 }, {
   id: 'settings',
   label: 'Settings',

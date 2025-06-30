@@ -14,8 +14,9 @@ const components = {
   dashboard: DashboardHome,
   journal: Journal,
   chat: TextChat,
-  voice: VoiceSession,
+  voice: VoiceSession,          
   breathing: BreathingExercise,
+  resources: Resources,
   settings: SettingsPanel,
 };
 
