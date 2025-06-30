@@ -57,7 +57,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-green-900/30 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-[#4E85A2]/30 flex items-center justify-center p-4">
       <motion.div
         className="w-full max-w-md"
         initial={{ opacity: 0, y: -20 }}
@@ -66,11 +66,11 @@ const AuthPage = () => {
       >
         <div className="text-center mb-8">
           <motion.div
-            className="w-16 h-16 bg-green-400/10 rounded-full flex items-center justify-center mx-auto mb-4"
+            className="w-16 h-16 bg-[#4E85A2]/10 rounded-full flex items-center justify-center mx-auto mb-4"
             animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Heart className="w-8 h-8 text-green-400" />
+            <Heart className="w-8 h-8 text-[#4E85A2]" />
           </motion.div>
                           <h1 className="text-3xl font-bold text-foreground">Welcome to TheraBot</h1>
           <p className="text-muted-foreground mt-2">
@@ -78,7 +78,7 @@ const AuthPage = () => {
           </p>
         </div>
 
-        <Card className="bg-green-950/30 border-green-400/20">
+        <Card className="bg-[#4E85A2]/20 border-[#4E85A2]/30">
           <CardHeader>
             <CardTitle>{isSignUp ? 'Sign Up' : 'Sign In'}</CardTitle>
           </CardHeader>

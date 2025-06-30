@@ -16,7 +16,7 @@ const modelConfig = {
 
 // Predefined mood categories
 export const MOOD_CATEGORIES = {
-  happy: { emoji: '😊', color: 'bg-green-500', description: 'Joyful, content, positive' },
+  happy: { emoji: '😊', color: '#4E85A2', description: 'Joyful, content, positive' },
   peaceful: { emoji: '😌', color: 'bg-blue-500', description: 'Calm, serene, relaxed' },
   excited: { emoji: '🤩', color: 'bg-yellow-500', description: 'Energetic, enthusiastic, motivated' },
   sad: { emoji: '😔', color: 'bg-blue-600', description: 'Down, melancholy, sorrowful' },

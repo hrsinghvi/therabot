@@ -305,30 +305,6 @@ const DashboardHome = () => {
             </CardContent>
           </Card>
 
-          {/* Encouragement Section */}
-          <div className="text-center p-6 bg-gradient-to-r from-secondary/50 to-primary/10 rounded-lg border border-border/50">
-            <h3 className="font-medium mb-2 text-lg flex items-center justify-center gap-2">
-              <Heart className="w-5 h-5 text-red-400" />
-              You're on a journey of self-discovery
-            </h3>
-            <p className="text-muted-foreground text-sm">
-              Every interaction helps our AI understand your emotional patterns better, providing you with deeper insights.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2 justify-center">
-              <Button size="sm" onClick={() => navigate("/journal")} className="flex items-center gap-1">
-                <BookOpen className="w-3 h-3" />
-                Journal
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => navigate("/voice")} className="flex items-center gap-1">
-                <Mic className="w-3 h-3" />
-                Voice
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => navigate("/chat")} className="flex items-center gap-1">
-                <MessageCircle className="w-3 h-3" />
-                Chat
-              </Button>
-            </div>
-          </div>
         </>
       )}
     </div>

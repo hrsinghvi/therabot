@@ -33,7 +33,7 @@ const EmptyChatState = () => (
     transition={{ duration: 0.3 }}
     className="flex-1 flex flex-col items-center justify-center text-center p-4"
   >
-    <h2 className="text-2xl font-medium text-[#131313] dark:text-[#EAE9E8]">What's on your mind today?</h2>
+            <h2 className="text-2xl font-medium text-white">What's on your mind today?</h2>
   </motion.div>
 );
 
