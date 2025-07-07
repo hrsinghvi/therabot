@@ -198,8 +198,8 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
 
   if (!isOpen) return null;
 
-  // Fallback UI for invalid entry
-  if (!entry || typeof entry !== 'object' || (!entry.id && !entry._isPromptBased && !entry.title)) {
+  // Fallback UI for invalid entry - only show error for malformed entries, not null (new entries)
+  if (entry && (typeof entry !== 'object' || (!entry.id && !entry._isPromptBased && !entry.title))) {
     return (
       <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
         <div className="bg-background rounded-lg shadow-lg p-8 max-w-lg w-full text-center">

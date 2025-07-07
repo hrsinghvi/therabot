@@ -225,6 +225,7 @@ const Journal = () => {
           onSelectPrompt={handleSelectPrompt}
           onWriteFreely={handleNewEntry}
           onClose={() => setIsPromptSelectorOpen(false)}
+          startWithPrompt={true}
         />
       )}
     </>

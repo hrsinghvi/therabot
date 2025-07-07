@@ -9,10 +9,11 @@ interface JournalPromptSelectorProps {
   onSelectPrompt: (prompt: JournalPrompt) => void;
   onWriteFreely: () => void;
   onClose: () => void;
+  startWithPrompt?: boolean;
 }
 
-const JournalPromptSelector: React.FC<JournalPromptSelectorProps> = ({ onSelectPrompt, onWriteFreely, onClose }) => {
-  const [showPrompts, setShowPrompts] = useState(false);
+const JournalPromptSelector: React.FC<JournalPromptSelectorProps> = ({ onSelectPrompt, onWriteFreely, onClose, startWithPrompt = false }) => {
+  const [showPrompts, setShowPrompts] = useState(startWithPrompt);
   const [currentPrompt, setCurrentPrompt] = useState<JournalPrompt>(getRandomPrompt());
 
   const handleShowPrompts = () => {
@@ -54,25 +55,37 @@ const JournalPromptSelector: React.FC<JournalPromptSelectorProps> = ({ onSelectP
               </CardContent>
             </Card>
             
-            <div className="flex gap-3">
-              <Button onClick={handleUsePrompt} className="flex-1">
-                <BookOpen className="mr-2 h-4 w-4" />
-                Use This Prompt
-              </Button>
-              <Button variant="outline" onClick={handleGetNewPrompt} className="flex-1">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Try Another
-              </Button>
-            </div>
+            {showPrompts && (
+              <div className="flex gap-3">
+                <Button onClick={handleUsePrompt} className="flex-1">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Use This Prompt
+                </Button>
+                <Button variant="outline" onClick={handleGetNewPrompt} className="flex-1">
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Try Another
+                </Button>
+              </div>
+            )}
             
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setShowPrompts(false)} className="flex-1">
-                Back to Options
-              </Button>
-              <Button variant="outline" onClick={onClose} className="flex-1">
-                Cancel
-              </Button>
-            </div>
+            {showPrompts && !startWithPrompt && (
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setShowPrompts(false)} className="flex-1">
+                  Back to Options
+                </Button>
+                <Button variant="outline" onClick={onClose} className="flex-1">
+                  Cancel
+                </Button>
+              </div>
+            )}
+
+            {showPrompts && startWithPrompt && (
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={onClose} className="flex-1">
+                  Cancel
+                </Button>
+              </div>
+            )}
           </CardContent>
         </div>
       </div>
