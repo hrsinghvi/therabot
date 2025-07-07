@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { JournalPrompt, getRandomPrompt, getCategories, getDifficulties } from '@/services/journalPrompts';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface JournalPromptSelectorProps {
   onSelectPrompt: (prompt: JournalPrompt) => void;
@@ -31,15 +32,14 @@ const JournalPromptSelector: React.FC<JournalPromptSelectorProps> = ({ onSelectP
 
   if (showPrompts) {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div className="bg-background rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2">
+      <Dialog open onOpenChange={onClose}>
+        <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden">
+          <DialogHeader className="border-b">
+            <DialogTitle className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-primary" />
               Choose a Prompt
-            </CardTitle>
-          </CardHeader>
-          
+            </DialogTitle>
+          </DialogHeader>
           <CardContent className="p-6 space-y-4">
             <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
               <CardContent className="p-6">
@@ -87,21 +87,20 @@ const JournalPromptSelector: React.FC<JournalPromptSelectorProps> = ({ onSelectP
               </div>
             )}
           </CardContent>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-background rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        <CardHeader className="border-b">
-          <CardTitle className="flex items-center gap-2">
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <DialogHeader className="border-b">
+          <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
             Choose Your Writing Style
-          </CardTitle>
-        </CardHeader>
-        
+          </DialogTitle>
+        </DialogHeader>
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card 
@@ -145,8 +144,8 @@ const JournalPromptSelector: React.FC<JournalPromptSelectorProps> = ({ onSelectP
             </Button>
           </div>
         </CardContent>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
