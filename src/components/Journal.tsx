@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, BookOpen, Edit, Brain } from 'lucide-react';
+import { Plus, BookOpen, Edit, Brain, Sparkles, PenTool } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -8,7 +8,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { journalService, type JournalEntry } from '@/services/supabase';
 import JournalEntryEditor from './JournalEntryEditor';
+import JournalPromptSelector from './JournalPromptSelector';
 import Resources from "@/components/Resources";
+import { JournalPrompt } from '@/services/journalPrompts';
 
 const Journal = () => {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
@@ -17,6 +19,7 @@ const Journal = () => {
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPromptSelectorOpen, setIsPromptSelectorOpen] = useState(false);
 
   const fetchEntries = useCallback(async () => {
     try {
@@ -40,9 +43,39 @@ const Journal = () => {
   }, [fetchEntries]);
   
   const handleNewEntry = () => {
-    console.log('Creating new journal entry...');
+    console.log('Journal: handleNewEntry called');
+    // Always open a blank editor for new entry
     setSelectedEntry(null);
     setIsEditorOpen(true);
+    setIsPromptSelectorOpen(false);
+    console.log('Journal: Editor should be open for free writing');
+  };
+
+  const handlePromptMe = () => {
+    // Open the prompt selector modal
+    setIsPromptSelectorOpen(true);
+  };
+
+  const handleSelectPrompt = (prompt: JournalPrompt) => {
+    console.log('Selected prompt:', prompt.text);
+    console.log('About to create temp entry...');
+    // Create a temporary entry object with the prompt data
+    const tempEntry = {
+      id: null,
+      title: `Journal Entry - ${prompt.category}`,
+      content: `Prompt: ${prompt.text}\n\n`,
+      created_at: new Date().toISOString(),
+      user_id: '',
+      mood: null,
+      ai_analysis: null,
+      _isPromptBased: true // Custom flag to identify prompt-based entries
+    };
+    console.log('Created temp entry:', tempEntry);
+    setSelectedEntry(tempEntry as any);
+    console.log('Set selected entry, about to open editor...');
+    setIsEditorOpen(true);
+    setIsPromptSelectorOpen(false);
+    console.log('Editor should be open now');
   };
 
   const handleEditEntry = (entry: JournalEntry) => {
@@ -81,10 +114,19 @@ const Journal = () => {
             <CardDescription>A quiet space for your thoughts.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button size="lg" className="w-full md:w-auto" onClick={handleNewEntry}>
-              <Plus className="mr-2 h-5 w-5" />
-              Start Today's Entry
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button size="lg" className="flex-1" onClick={handlePromptMe}>
+                <Sparkles className="mr-2 h-5 w-5" />
+                Prompt Me
+              </Button>
+              <Button variant="outline" size="lg" className="flex-1" onClick={handleNewEntry}>
+                <Plus className="mr-2 h-5 w-5" />
+                Write Freely
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground mt-3">
+              Choose to write freely or get inspired with thoughtful prompts.
+            </p>
           </CardContent>
         </Card>
 
@@ -177,6 +219,14 @@ const Journal = () => {
         onClose={handleCloseEditor}
         onSave={handleSave}
       />
+
+      {isPromptSelectorOpen && (
+        <JournalPromptSelector
+          onSelectPrompt={handleSelectPrompt}
+          onWriteFreely={handleNewEntry}
+          onClose={() => setIsPromptSelectorOpen(false)}
+        />
+      )}
     </>
   );
 };
