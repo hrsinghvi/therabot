@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { moodOrchestrator } from '@/services/mood-orchestrator';
 import { processMoodData } from '@/lib/mood-processing';
 import { MOOD_CATEGORIES } from '@/services/gemini';
+import { format } from 'date-fns';
 
 const DashboardHome = () => {
   const [stats, setStats] = useState([]);
@@ -17,6 +18,7 @@ const DashboardHome = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [recentAnalyses, setRecentAnalyses] = useState([]);
 
   useEffect(() => {
     const fetchMoodData = async () => {
@@ -32,6 +34,7 @@ const DashboardHome = () => {
         setWeeklyMoodData(weeklyData); // Show all data instead of slicing
         setInsights(insights); // Show all insights instead of limiting
         setTodaysMood(analytics.todaysSummary);
+        setRecentAnalyses(analytics.recentAnalyses || []);
       } catch (error) {
         console.error("Error fetching mood analytics:", error);
         setError("Unable to load mood data. Please try again.");
@@ -161,6 +164,63 @@ const DashboardHome = () => {
           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
             <div className="text-xs text-muted-foreground mb-1">AI Analysis:</div>
             <p className="text-sm">{todaysMood.reasoning}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  // Activity Duration Card
+  const ActivityDurationCard = () => {
+    // Group by source
+    const sources = ['journal', 'voice', 'chat'];
+    const grouped = sources.map(source => ({
+      source,
+      entries: recentAnalyses.filter(a => a.source === source && a.duration != null).slice(0, 3)
+    }));
+    const sourceLabels = {
+      journal: 'Journal',
+      voice: 'Voice Session',
+      chat: 'Chat Session'
+    };
+    const sourceIcons = {
+      journal: BookOpen,
+      voice: Mic,
+      chat: MessageCircle
+    };
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
+            Your Recent Activity Durations
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {grouped.map(group => (
+              <div key={group.source}>
+                <div className="flex items-center gap-2 mb-1">
+                  {React.createElement(sourceIcons[group.source], { className: 'w-4 h-4 text-muted-foreground' })}
+                  <span className="font-semibold text-sm">{sourceLabels[group.source]}</span>
+                </div>
+                {group.entries.length === 0 ? (
+                  <div className="text-xs text-muted-foreground mb-2 ml-6">No recent {sourceLabels[group.source].toLowerCase()}s with duration tracked.</div>
+                ) : (
+                  <ul className="ml-6 space-y-1">
+                    {group.entries.map(entry => (
+                      <li key={entry.id} className="flex items-center gap-2 text-sm">
+                        <span>{format(new Date(entry.created_at), 'MMM d, h:mm a')}</span>
+                        <span className="text-muted-foreground">·</span>
+                        <span>{entry.duration} min</span>
+                        <span className="text-muted-foreground">·</span>
+                        <span className="capitalize">{entry.primary_mood}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -304,6 +364,9 @@ const DashboardHome = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* Activity Duration Card */}
+          <ActivityDurationCard />
 
         </>
       )}

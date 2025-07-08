@@ -67,6 +67,7 @@ export interface MoodAnalysisEntry {
     key_emotions: string[];
     raw_content: string; // The original text that was analyzed
     created_at: string;
+    duration?: number; // Duration in minutes
 }
 
 export interface DailyMoodSummary {
@@ -352,7 +353,7 @@ export const moodAnalysisService = {
         return data || [];
     },
 
-    async create(analysis: MoodAnalysis, sourceId: string, rawContent: string): Promise<MoodAnalysisEntry> {
+    async create(analysis: MoodAnalysis, sourceId: string, rawContent: string, duration?: number): Promise<MoodAnalysisEntry> {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("User not authenticated");
 
@@ -366,7 +367,8 @@ export const moodAnalysisService = {
             confidence: analysis.confidence,
             reasoning: analysis.reasoning,
             key_emotions: analysis.keyEmotions,
-            raw_content: rawContent
+            raw_content: rawContent,
+            ...(duration !== undefined ? { duration } : {})
         };
 
         const { data, error } = await supabase

@@ -10,17 +10,17 @@ export class MoodOrchestrator {
     /**
      * Analyzes mood from journal entry and stores results
      */
-    async analyzeJournalEntry(entryId: string, content: string): Promise<MoodAnalysisEntry> {
+    async analyzeJournalEntry(entryId: string, content: string, duration?: number): Promise<MoodAnalysisEntry> {
         const analysis = await analyzeMoodFromText(content, 'journal');
-        return this.saveAnalysis(analysis, entryId, content);
+        return this.saveAnalysis(analysis, entryId, content, duration);
     }
 
     /**
      * Analyzes mood from chat conversation and stores results
      */
-    async analyzeChatMessage(messageId: string, content: string): Promise<MoodAnalysisEntry> {
+    async analyzeChatMessage(messageId: string, content: string, duration?: number): Promise<MoodAnalysisEntry> {
         const analysis = await analyzeMoodFromText(content, 'chat');
-        return this.saveAnalysis(analysis, messageId, content);
+        return this.saveAnalysis(analysis, messageId, content, duration);
     }
 
     /**
@@ -151,40 +151,44 @@ export class MoodOrchestrator {
     /**
      * Handles real-time mood updates (called after any user interaction)
      */
-    async handleRealtimeMoodUpdate(sourceType: 'journal' | 'chat', sourceId: string, content: string, context?: string): Promise<{
-        analysis: MoodAnalysisEntry;
-        todaysSummary: any;
+    async handleRealtimeMoodUpdate(
+      sourceType: 'journal' | 'chat',
+      sourceId: string,
+      content: string,
+      context?: string,
+      duration?: number
+    ): Promise<{
+      analysis: MoodAnalysisEntry;
+      todaysSummary: any;
     }> {
-        let analysis: MoodAnalysisEntry;
+      let analysis: MoodAnalysisEntry;
 
-        switch (sourceType) {
-            case 'journal':
-                analysis = await this.analyzeJournalEntry(sourceId, content);
-                break;
-            case 'chat':
-                analysis = await this.analyzeChatMessage(sourceId, content);
-                break;
-            default:
-                throw new Error('Unsupported source type');
-        }
+      switch (sourceType) {
+        case 'journal':
+          analysis = await this.analyzeJournalEntry(sourceId, content, duration);
+          break;
+        case 'chat':
+          analysis = await this.analyzeChatMessage(sourceId, content, duration);
+          break;
+        default:
+          throw new Error('Unsupported source type');
+      }
 
-        const todaysSummary = await this.getTodaysMoodSummary();
+      const todaysSummary = await this.getTodaysMoodSummary();
 
-        return {
-            analysis,
-            todaysSummary
-        };
+      return {
+        analysis,
+        todaysSummary
+      };
     }
 
-    private async saveAnalysis(analysis: MoodAnalysis, entryId: string, content: string): Promise<MoodAnalysisEntry> {
-        // Store the analysis
-        const storedAnalysis = await moodAnalysisService.create(analysis, entryId, content);
-        
-        // Update daily summary
-        const today = new Date().toISOString().split('T')[0];
-        await dailyMoodService.updateFromAnalyses(today);
-        
-        return storedAnalysis;
+    private async saveAnalysis(analysis: MoodAnalysis, entryId: string, content: string, duration?: number): Promise<MoodAnalysisEntry> {
+      // Store the analysis, now with duration
+      const storedAnalysis = await moodAnalysisService.create(analysis, entryId, content, duration);
+      // Update daily summary
+      const today = new Date().toISOString().split('T')[0];
+      await dailyMoodService.updateFromAnalyses(today);
+      return storedAnalysis;
     }
 }
 

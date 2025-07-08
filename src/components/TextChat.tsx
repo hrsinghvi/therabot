@@ -48,6 +48,7 @@ const TextChat = () => {
   const [chatSession, setChatSession] = useState<ChatSession | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [chatSessionStartTime, setChatSessionStartTime] = useState<number | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -165,6 +166,7 @@ const TextChat = () => {
 
     let currentConversationId = activeConversationId;
     let newConversationCreated = false;
+    let firstMessageTime = chatSessionStartTime;
 
     // 1. Save user message and create conversation if needed
     try {
@@ -175,6 +177,8 @@ const TextChat = () => {
         currentConversationId = newConversation.id;
         setActiveConversationId(currentConversationId);
         newConversationCreated = true;
+        setChatSessionStartTime(Date.now());
+        firstMessageTime = Date.now();
       }
 
       await messageService.create(currentConversationId, userMessage.role, userMessage.content);
@@ -207,13 +211,25 @@ const TextChat = () => {
       };
       setMessages((prev) => [...prev, aiMessage]);
       
+      // Calculate duration: from first message to last message
+      let durationMinutes = null;
+      const allMessages = [...messages, userMessage, aiMessage];
+      const firstMsg = allMessages.find(m => m.created_at) || allMessages[0];
+      const lastMsg = allMessages.reverse().find(m => m.created_at) || allMessages[allMessages.length - 1];
+      if (firstMsg && lastMsg && firstMsg.created_at && lastMsg.created_at) {
+        durationMinutes = Math.max(1, Math.round((new Date(lastMsg.created_at).getTime() - new Date(firstMsg.created_at).getTime()) / 60000));
+      } else if (firstMessageTime) {
+        durationMinutes = Math.max(1, Math.round((Date.now() - firstMessageTime) / 60000));
+      }
+
       // Trigger mood analysis using the mood orchestrator
       try {
         await moodOrchestrator.handleRealtimeMoodUpdate(
           'chat', 
           currentConversationId, 
           optimisticMessage, 
-          responseText
+          responseText,
+          durationMinutes
         );
       } catch (error) {
         console.error('Error analyzing chat mood:', error);
@@ -238,7 +254,7 @@ const TextChat = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentMessage, chatSession, isLoading, activeConversationId, listConversations]);
+  }, [currentMessage, chatSession, isLoading, activeConversationId, listConversations, messages, chatSessionStartTime]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

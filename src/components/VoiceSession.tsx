@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import useVoiceSession from '../hooks/use-voice-session';
 import { Button } from './ui/button';
@@ -5,9 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { Mic, MicOff, BrainCircuit, Bot, User, CircleStop, AlertCircle, Sparkles } from 'lucide-react';
+import { moodOrchestrator } from '@/services/mood-orchestrator';
 
 const VoiceSession = () => {
   const { sessionState, transcript, conversationHistory, error, toggleListening, endSession } = useVoiceSession();
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
 
   const latestAiResponse = conversationHistory.filter(turn => turn.speaker === 'ai').pop()?.text;
 
@@ -43,6 +46,37 @@ const VoiceSession = () => {
         case 'error': return 'Try Again';
         default: return 'Start Listening';
     }
+  };
+
+  // Custom toggleListening to track session start
+  const handleToggleListening = () => {
+    if (sessionState === 'idle' || sessionState === 'error') {
+      setSessionStartTime(Date.now());
+    }
+    toggleListening();
+  };
+
+  // Custom endSession to track duration and trigger mood analysis
+  const handleEndSession = async () => {
+    endSession();
+    if (sessionStartTime && conversationHistory.length > 0) {
+      const durationMinutes = Math.max(1, Math.round((Date.now() - sessionStartTime) / 60000));
+      // Combine all user turns as content
+      const userContent = conversationHistory.filter(turn => turn.speaker === 'user').map(turn => turn.text).join(' ');
+      try {
+        await moodOrchestrator.handleRealtimeMoodUpdate(
+          'voice',
+          'voice-session', // You may want to use a real session ID if available
+          userContent,
+          undefined,
+          durationMinutes
+        );
+      } catch (err) {
+        // Non-blocking
+        console.error('Voice session mood analysis failed:', err);
+      }
+    }
+    setSessionStartTime(null);
   };
 
     return (
@@ -148,7 +182,7 @@ const VoiceSession = () => {
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
             <Button 
-              onClick={toggleListening} 
+              onClick={handleToggleListening} 
               disabled={sessionState === 'processing' || sessionState === 'speaking'}
               className="w-full sm:w-auto flex-grow sm:flex-grow-0"
               size="lg"
@@ -159,7 +193,7 @@ const VoiceSession = () => {
             
             {conversationHistory.length > 0 && (
               <Button
-                onClick={endSession} 
+                onClick={handleEndSession} 
                 variant="destructive"
                 className="w-full sm:w-auto"
                 size="lg"

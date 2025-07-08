@@ -25,10 +25,12 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
   const [moodAnalysis, setMoodAnalysis] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState<number | null>(null);
 
   useEffect(() => {
     console.log('JournalEntryEditor useEffect - isOpen:', isOpen, 'entry:', entry);
     if (isOpen) {
+      setStartTime(Date.now());
       if (entry?.id) {
         // Editing existing entry
         setTitle(entry.title || '');
@@ -44,6 +46,8 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
         }
       }
       setMoodAnalysis(null);
+    } else {
+      setStartTime(null);
     }
   }, [entry, isOpen]);
 
@@ -76,13 +80,21 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
       
       console.log('Journal entry saved successfully:', journalEntry.id);
 
+      // Calculate duration in minutes
+      let durationMinutes = null;
+      if (startTime) {
+        durationMinutes = Math.max(1, Math.round((Date.now() - startTime) / 60000));
+      }
+
       // Trigger mood analysis
       try {
-        console.log('Triggering mood analysis for entry:', journalEntry.id);
+        console.log('Triggering mood analysis for entry:', journalEntry.id, 'with duration:', durationMinutes);
         await moodOrchestrator.handleRealtimeMoodUpdate(
           'journal',
           journalEntry.id,
-          journalEntry.content
+          journalEntry.content,
+          undefined,
+          durationMinutes
         );
         console.log('Mood analysis complete.');
       } catch (analysisError) {
