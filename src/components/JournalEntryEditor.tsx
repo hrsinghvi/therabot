@@ -26,6 +26,8 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [showDefinition, setShowDefinition] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('JournalEntryEditor useEffect - isOpen:', isOpen, 'entry:', entry);
@@ -208,6 +210,17 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
     );
   };
 
+  // Add a handler for mood click
+  const handleMoodClick = (mood: string) => {
+    if (selectedMood === mood) {
+      setSelectedMood(null);
+      setShowDefinition(null);
+    } else {
+      setSelectedMood(mood);
+      setShowDefinition(MOOD_CATEGORIES[mood as keyof typeof MOOD_CATEGORIES]?.description || null);
+    }
+  };
+
   if (!isOpen) return null;
 
   // Fallback UI for invalid entry - only show error for malformed entries, not null (new entries)
@@ -305,13 +318,20 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
                         {Object.entries(MOOD_CATEGORIES).map(([mood, meta]) => (
                           <div
                             key={mood}
-                            className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 text-xs"
+                            className={`flex items-center gap-2 p-2 rounded-lg bg-muted/50 text-xs cursor-pointer transition border ${selectedMood === mood ? 'border-primary bg-primary/10' : 'border-transparent'}`}
+                            onClick={() => handleMoodClick(mood)}
                           >
                             <span className="text-base">{meta.emoji}</span>
-                            <span className="capitalize">{mood}</span>
+                            <span className="capitalize">{mood.replace('_', ' ')}</span>
                           </div>
                         ))}
                       </div>
+                      {/* Show definition below the grid if a mood is selected */}
+                      {selectedMood && showDefinition && (
+                        <div className="mt-2 p-2 rounded bg-muted text-xs text-foreground border border-border animate-fade-in">
+                          <span className="font-semibold capitalize">{selectedMood.replace('_', ' ')}:</span> {showDefinition}
+                        </div>
+                      )}
                       {/* Scroll indicator icon, only show if scrollable */}
                       <ScrollIndicator gridId="mood-scroll-grid" />
                     </div>
