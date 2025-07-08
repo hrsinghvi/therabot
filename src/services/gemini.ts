@@ -33,6 +33,7 @@ export const MOOD_CATEGORIES = {
   indecisive: { emoji: '🫤', color: 'bg-blue-300', description: 'Mentally stuck between options; hesitant and unsure' },
   skeptical: { emoji: '🤨', color: 'bg-yellow-800', description: 'Distrustful or doubtful of others\' intentions or ideas' },
   guarded: { emoji: '😶', color: 'bg-gray-600', description: 'Emotionally closed off; unwilling to be vulnerable' },
+  mad: { emoji: '😡', color: 'bg-red-700', description: 'Very angry, enraged, or furious; intense displeasure or hostility' },
 } as const;
 
 export type MoodType = keyof typeof MOOD_CATEGORIES;
@@ -128,32 +129,13 @@ export async function analyzeMoodFromText(
   source: 'journal' | 'voice' | 'chat',
   context?: string
 ): Promise<MoodAnalysis> {
+  const moodList = Object.entries(MOOD_CATEGORIES).map(([key, value]) => `- ${key}: ${value.description}`).join('\n');
   const model = genAI.getGenerativeModel({
     ...modelConfig,
-    systemInstruction: `You are an expert emotional intelligence AI that analyzes text to determine mood and emotional state. 
-
-Available mood categories:
-${Object.entries(MOOD_CATEGORIES).map(([key, value]) => `- ${key}: ${value.description}`).join('\n')}
-
-Your task is to analyze the provided text and return a JSON response with the following structure:
-{
-  "primaryMood": "one of the mood categories",
-  "secondaryMood": "optional secondary mood if present",
-  "intensity": "number from 1-10 indicating emotional intensity",
-  "confidence": "number from 0-1 indicating how confident you are in this analysis",
-  "reasoning": "brief explanation of why you chose this mood",
-  "keyEmotions": ["array", "of", "key", "emotional", "words", "detected"]
-}
-
-Focus on the overall emotional tone, not just keywords. Consider context, writing style, and implicit emotions. Be empathetic and accurate.`
+    systemInstruction: `You are an expert emotional intelligence AI that analyzes text to determine mood and emotional state.\n\nAvailable mood categories (always use one of these, never invent new ones):\n${moodList}\n\nIMPORTANT:\n- Always return a valid JSON object as specified below, even if you are unsure.\n- If the user expresses strong anger, rage, or fury, use 'mad' as the primaryMood.\n- Never label strong emotions as 'neutral'.\n- If you are unsure, pick the closest matching mood from the list.\n- Do not return any text outside the JSON object.\n\nYour task is to analyze the provided text and return a JSON response with the following structure:\n{\n  "primaryMood": "one of the mood categories",\n  "secondaryMood": "optional secondary mood if present",\n  "intensity": "number from 1-10 indicating emotional intensity",\n  "confidence": "number from 0-1 indicating how confident you are in this analysis",\n  "reasoning": "brief explanation of why you chose this mood",\n  "keyEmotions": ["array", "of", "key", "emotional", "words", "detected"]\n}\n\nFocus on the overall emotional tone, not just keywords. Consider context, writing style, and implicit emotions. Be empathetic and accurate.`
   });
 
-  const prompt = `Analyze the mood and emotional state from this ${source} content:
-
-Content: "${content}"
-${context ? `Additional context: ${context}` : ''}
-
-Respond with only the JSON object, no additional text.`;
+  const prompt = `Analyze the mood and emotional state from this ${source} content:\n\nContent: "${content}"\n${context ? `Additional context: ${context}` : ''}\n\nRespond with only the JSON object, no additional text.`;
 
   try {
     const result = await model.generateContent(prompt);
