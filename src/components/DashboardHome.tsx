@@ -19,6 +19,35 @@ const DashboardHome = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [recentAnalyses, setRecentAnalyses] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleProcessUnanalyzedEntries = async () => {
+    if (isProcessing) return;
+    
+    setIsProcessing(true);
+    try {
+      console.log('Starting retroactive analysis...');
+      const result = await moodOrchestrator.processUnanalyzedJournalEntries();
+      console.log('Retroactive analysis complete:', result);
+      
+             if (result.processed > 0) {
+         alert(`Successfully processed ${result.processed} journal entries! Refreshing dashboard...`);
+         // Refresh the dashboard data
+         window.location.reload();
+       } else {
+        alert('No unanalyzed journal entries found.');
+      }
+      
+      if (result.errors.length > 0) {
+        console.error('Some entries failed to process:', result.errors);
+      }
+    } catch (error) {
+      console.error('Error processing unanalyzed entries:', error);
+      alert(`Error processing entries: ${error.message}`);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
     const fetchMoodData = async () => {
@@ -101,6 +130,21 @@ const DashboardHome = () => {
                   <MessageCircle className="w-3 h-3" />
                   AI Chat
                 </Button>
+              </div>
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <Button 
+                  size="sm" 
+                  variant="secondary" 
+                  onClick={handleProcessUnanalyzedEntries}
+                  disabled={isProcessing}
+                  className="w-full flex items-center gap-1"
+                >
+                  <Brain className="w-3 h-3" />
+                  {isProcessing ? 'Processing Journal Entries...' : 'Analyze Existing Journal Entries'}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Click to analyze your existing journal entries for mood data
+                </p>
               </div>
             </div>
           </CardContent>
