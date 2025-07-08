@@ -252,39 +252,67 @@ export class ElevenLabsTTSProvider implements TTSProvider {
   }
 
   async synthesize(text: string, config?: TTSConfig): Promise<TTSResult> {
-    // You can customize the voice_id and other params as needed
-    const voiceId = config?.voice || 'EXAVITQu4vr4xnSDxMaL'; // Default ElevenLabs voice
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method: 'POST',
-      headers: {
-        'xi-api-key': this.apiKey,
-        'Content-Type': 'application/json',
-        'Accept': 'audio/mpeg'
-      },
-      body: JSON.stringify({
-        text,
-        model_id: 'eleven_monolingual_v1', // or another model if you want
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-          style: 0.5,
-          use_speaker_boost: true
-        }
-      }),
-    });
+    try {
+      console.log('ElevenLabs TTS: Starting synthesis for text length:', text.length);
+      
+      // You can customize the voice_id and other params as needed
+      const voiceId = config?.voice || 'EXAVITQu4vr4xnSDxMaL'; // Default ElevenLabs voice
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': this.apiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg'
+        },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0.5,
+            use_speaker_boost: true
+          }
+        }),
+      });
 
-    const contentType = response.headers.get('content-type');
-    if (!response.ok || !contentType?.startsWith('audio/')) {
-      const errorText = await response.text();
-      console.error('ElevenLabs TTS error:', errorText);
-      throw new Error('ElevenLabs TTS failed: ' + errorText);
+      const contentType = response.headers.get('content-type');
+      if (!response.ok || !contentType?.startsWith('audio/')) {
+        const errorText = await response.text();
+        console.error('ElevenLabs TTS error:', errorText);
+        throw new Error('ElevenLabs TTS failed: ' + errorText);
+      }
+
+      const audioBlob = await response.blob();
+      console.log('ElevenLabs TTS: Received audio blob, size:', audioBlob.size, 'bytes');
+      
+      // Check blob size - if too large for data URL, use blob URL as fallback
+      const maxSize = 50 * 1024 * 1024; // 50MB limit for data URLs
+      
+      let audioUrl: string;
+      if (audioBlob.size > maxSize) {
+        console.log('ElevenLabs TTS: Large file, using blob URL');
+        // Use blob URL for large files
+        audioUrl = URL.createObjectURL(audioBlob);
+      } else {
+        console.log('ElevenLabs TTS: Converting to base64 data URL');
+        // Convert blob to base64 data URL for better Vercel compatibility
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const base64String = btoa(String.fromCharCode(...uint8Array));
+        audioUrl = `data:audio/mpeg;base64,${base64String}`;
+      }
+
+      console.log('ElevenLabs TTS: Audio URL created, type:', audioUrl.startsWith('data:') ? 'data URL' : 'blob URL');
+      
+      return {
+        audioUrl,
+        wordCount: text.split(' ').length,
+      };
+    } catch (error) {
+      console.error('ElevenLabs TTS Error:', error);
+      throw new Error('Failed to synthesize speech with ElevenLabs TTS');
     }
-    const audioBlob = await response.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
-    return {
-      audioUrl,
-      wordCount: text.split(' ').length,
-    };
   }
 }
 
@@ -340,6 +368,12 @@ export class TTSService {
 // Default export - create based on environment variables
 const TTS_PROVIDER = import.meta.env.VITE_TTS_PROVIDER || 'mock';
 const TTS_API_KEY = import.meta.env.VITE_TTS_API_KEY;
+
+console.log('TTS Configuration:', { 
+  provider: TTS_PROVIDER, 
+  hasApiKey: !!TTS_API_KEY,
+  keyLength: TTS_API_KEY?.length || 0
+});
 
 export const ttsService = TTSService.create(
   TTS_PROVIDER as 'google' | 'openai' | 'web' | 'mock' | 'assemblyai' | 'livekit' | 'elevenlabs',

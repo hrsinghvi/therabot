@@ -49,12 +49,30 @@ const useVoiceSession = () => {
       // Use ElevenLabs (or configured TTS) instead of Web Speech API
       try {
         const ttsResult = await ttsService.synthesize(processedResponse, {});
-        const audio = new Audio(ttsResult.audioUrl);
+        const audio = new Audio();
+        
+        // Better error handling for Vercel deployment
         audio.onended = () => setSessionState('idle');
-        audio.onerror = () => setSessionState('idle');
-        audio.play();
+        audio.onerror = (e) => {
+          console.error('Audio playback error:', e);
+          setError('Audio playback failed. Please check your connection.');
+          setSessionState('idle');
+        };
+        
+        audio.oncanplaythrough = () => {
+          audio.play().catch((playError) => {
+            console.error('Audio play failed:', playError);
+            setError('Could not play audio. Please try again.');
+            setSessionState('idle');
+          });
+        };
+        
+        // Set source after all event listeners are attached
+        audio.src = ttsResult.audioUrl;
+        
       } catch (ttsError) {
         console.error('TTS error:', ttsError);
+        setError('Speech synthesis failed. Please try again.');
         setSessionState('idle');
       }
       
