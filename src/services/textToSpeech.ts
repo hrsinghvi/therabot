@@ -243,6 +243,60 @@ export class AssemblyAITTSProvider implements TTSProvider {
   }
 }
 
+// ElevenLabs Text-to-Speech Provider
+export class ElevenLabsTTSProvider implements TTSProvider {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async synthesize(text: string, config?: TTSConfig): Promise<TTSResult> {
+    // You can customize the voice_id and other params as needed
+    const voiceId = config?.voice || 'EXAVITQu4vr4xnSDxMaL'; // Default ElevenLabs voice
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: {
+        'xi-api-key': this.apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'audio/mpeg'
+      },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_monolingual_v1', // or another model if you want
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+          style: 0.5,
+          use_speaker_boost: true
+        }
+      }),
+    });
+
+    const contentType = response.headers.get('content-type');
+    if (!response.ok || !contentType?.startsWith('audio/')) {
+      const errorText = await response.text();
+      console.error('ElevenLabs TTS error:', errorText);
+      throw new Error('ElevenLabs TTS failed: ' + errorText);
+    }
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    return {
+      audioUrl,
+      wordCount: text.split(' ').length,
+    };
+  }
+}
+
+// LiveKit Text-to-Speech Provider (stub for linter)
+export class LiveKitTTSProvider implements TTSProvider {
+  private apiKey: string;
+  constructor(apiKey: string) { this.apiKey = apiKey; }
+  async synthesize(text: string, config?: TTSConfig): Promise<TTSResult> {
+    throw new Error('LiveKitTTSProvider is not implemented.');
+  }
+}
+
 // TTS Service Factory
 export class TTSService {
   private provider: TTSProvider;
@@ -256,7 +310,7 @@ export class TTSService {
   }
 
   // Factory method to create TTS service based on provider type
-  static create(providerType: 'google' | 'openai' | 'web' | 'mock' | 'assemblyai', apiKey?: string): TTSService {
+  static create(providerType: 'google' | 'openai' | 'web' | 'mock' | 'assemblyai' | 'livekit' | 'elevenlabs', apiKey?: string): TTSService {
     switch (providerType) {
       case 'google':
         if (!apiKey) throw new Error('Google TTS requires API key');
@@ -267,6 +321,12 @@ export class TTSService {
       case 'assemblyai':
         if (!apiKey) throw new Error('AssemblyAI TTS requires API key');
         return new TTSService(new AssemblyAITTSProvider(apiKey));
+      case 'livekit':
+        if (!apiKey) throw new Error('LiveKit TTS requires API key');
+        return new TTSService(new LiveKitTTSProvider(apiKey));
+      case 'elevenlabs':
+        if (!apiKey) throw new Error('ElevenLabs TTS requires API key');
+        return new TTSService(new ElevenLabsTTSProvider(apiKey));
       case 'web':
         return new TTSService(new WebSpeechTTSProvider());
       case 'mock':
@@ -282,6 +342,6 @@ const TTS_PROVIDER = import.meta.env.VITE_TTS_PROVIDER || 'mock';
 const TTS_API_KEY = import.meta.env.VITE_TTS_API_KEY;
 
 export const ttsService = TTSService.create(
-  TTS_PROVIDER as 'google' | 'openai' | 'web' | 'mock' | 'assemblyai',
+  TTS_PROVIDER as 'google' | 'openai' | 'web' | 'mock' | 'assemblyai' | 'livekit' | 'elevenlabs',
   TTS_API_KEY
 ); 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { sendMessageToGemini, getChatSession } from '../services/gemini';
+import { ttsService } from '@/services/textToSpeech';
 
 type ConversationTurn = {
   speaker: 'user' | 'ai';
@@ -45,97 +46,22 @@ const useVoiceSession = () => {
         .replace(/\?/g, '?... ') // Longer pause after questions
         .replace(/!/g, '!... '); // Longer pause after exclamations
       
-      const utterance = new SpeechSynthesisUtterance(processedResponse);
-      
-      // Ensure voices are loaded, then set female voice
-      const setFemaleVoice = () => {
-        const voices = speechSynthesis.getVoices();
-        console.log('Available voices:', voices.map(v => v.name)); // Debug log
-        
-        const femaleVoice = voices.find(voice => 
-          // Prioritize high-quality female voices
-          voice.name.toLowerCase().includes('samantha') || // macOS premium voice
-          voice.name.toLowerCase().includes('karen') ||    // macOS premium voice
-          voice.name.toLowerCase().includes('susan') ||    // macOS premium voice
-          voice.name.toLowerCase().includes('victoria') || // Windows premium voice
-          voice.name.toLowerCase().includes('hazel') ||    // Windows premium voice
-          voice.name.toLowerCase().includes('zira') ||     // Windows voice
-          voice.name.toLowerCase().includes('female') ||
-          voice.name.toLowerCase().includes('woman') ||
-          voice.name.toLowerCase().includes('amelie') ||   // French female
-          voice.name.toLowerCase().includes('anna') ||     // German female
-          voice.name.toLowerCase().includes('catherine') || // English female
-          voice.name.toLowerCase().includes('fiona') ||    // Scottish female
-          voice.name.toLowerCase().includes('moira') ||    // Irish female
-          voice.name.toLowerCase().includes('tessa') ||    // South African female
-          (voice.name.toLowerCase().includes('google') && voice.name.toLowerCase().includes('standard-a')) ||
-          (voice.name.toLowerCase().includes('microsoft') && voice.name.toLowerCase().includes('zira'))
-        );
-        
-        if (femaleVoice) {
-          utterance.voice = femaleVoice;
-          console.log('Selected female voice:', femaleVoice.name);
-        } else {
-          // Fallback: avoid obvious male voices
-          const fallbackFemale = voices.find(voice => {
-            const name = voice.name.toLowerCase();
-            return !name.includes('male') && 
-                   !name.includes('man') && 
-                   !name.includes('david') && 
-                   !name.includes('alex') && 
-                   !name.includes('daniel') && 
-                   !name.includes('james') && 
-                   !name.includes('thomas') && 
-                   !name.includes('fred');
-          });
-          
-          if (fallbackFemale) {
-            utterance.voice = fallbackFemale;
-            console.log('Selected fallback female voice:', fallbackFemale.name);
-          } else {
-            console.log('No female voice found, using default');
-          }
-        }
-      };
-      
-      // Try to set voice immediately
-      setFemaleVoice();
-      
-      // If no voices loaded yet, wait for them
-      if (speechSynthesis.getVoices().length === 0) {
-        speechSynthesis.onvoiceschanged = () => {
-          setFemaleVoice();
-          speechSynthesis.onvoiceschanged = null; // Remove listener
-        };
+      // Use ElevenLabs (or configured TTS) instead of Web Speech API
+      try {
+        const ttsResult = await ttsService.synthesize(processedResponse, {});
+        const audio = new Audio(ttsResult.audioUrl);
+        audio.onended = () => setSessionState('idle');
+        audio.onerror = () => setSessionState('idle');
+        audio.play();
+      } catch (ttsError) {
+        console.error('TTS error:', ttsError);
+        setSessionState('idle');
       }
       
-      // Fine-tune speech parameters for more natural sound
-      utterance.rate = 1.0; // Normal pace, slightly faster than before
-      utterance.pitch = 1.05; // Slightly higher pitch
-      utterance.volume = 1.0; // Full volume to avoid audio processing issues
-      
-      // Fix audio glitches by ensuring clean speech synthesis
-      utterance.onstart = () => {
-        console.log('Speech started');
-      };
-      
-      utterance.onend = () => {
-        console.log('Speech ended');
-        setSessionState('idle');
-      };
-      
-      utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
-        setSessionState('idle');
-      };
-      
-      // Cancel any existing speech before starting new one
-      speechSynthesis.cancel();
-      
-      // Small delay to ensure cancel completes before starting new speech
-      setTimeout(() => {
-        speechSynthesis.speak(utterance);
-      }, 100);
+      // --- Old Web Speech API code removed ---
+      // const utterance = new SpeechSynthesisUtterance(processedResponse);
+      // ... set voice, pitch, etc ...
+      // speechSynthesis.speak(utterance);
     } catch (error) {
       console.error("Error with Gemini API or speech synthesis:", error);
       setError("Failed to get AI response. Please try again.");
