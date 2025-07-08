@@ -23,6 +23,16 @@ export const MOOD_CATEGORIES = {
   anxious: { emoji: '😰', color: 'bg-red-500', description: 'Worried, nervous, stressed' },
   frustrated: { emoji: '😠', color: 'bg-red-600', description: 'Irritated, annoyed, overwhelmed' },
   neutral: { emoji: '😐', color: 'bg-gray-500', description: 'Balanced, stable, unremarkable' },
+  bored: { emoji: '🥱', color: 'bg-gray-400', description: 'Low mental stimulation; disengaged from environment' },
+  confused: { emoji: '😵‍💫', color: 'bg-purple-400', description: 'Lacking understanding or clarity; mentally lost' },
+  disgusted: { emoji: '🤢', color: 'bg-green-700', description: 'Strong aversion or repulsion, often moral or physical' },
+  determined: { emoji: '🫡', color: 'bg-orange-600', description: 'High internal drive despite obstacles (not excited or happy)' },
+  embarrassed: { emoji: '🫣', color: 'bg-pink-400', description: 'Self-conscious or awkward due to perceived judgment' },
+  curious: { emoji: '🤓', color: 'bg-yellow-300', description: 'Actively wanting to learn or understand something' },
+  burnt_out: { emoji: '🫠', color: 'bg-gray-700', description: 'Deep exhaustion from prolonged stress; emotionally depleted' },
+  indecisive: { emoji: '🫤', color: 'bg-blue-300', description: 'Mentally stuck between options; hesitant and unsure' },
+  skeptical: { emoji: '🤨', color: 'bg-yellow-800', description: 'Distrustful or doubtful of others\' intentions or ideas' },
+  guarded: { emoji: '😶', color: 'bg-gray-600', description: 'Emotionally closed off; unwilling to be vulnerable' },
 } as const;
 
 export type MoodType = keyof typeof MOOD_CATEGORIES;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Loader2, Trash2, Brain, Sparkles, BookOpen } from 'lucide-react';
+import { Save, Loader2, Trash2, Brain, Sparkles, BookOpen, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
@@ -228,116 +228,115 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent 
           key={entry?.id || 'new-entry'}
-          className="sm:max-w-4xl w-full h-[80vh] bg-card border-border flex flex-col"
+          className="sm:max-w-4xl w-full h-[80vh] bg-card border-border flex flex-col p-0"
         >
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              {entry?.id ? 'Edit Entry' : 'New Journal Entry'}
-              {content.startsWith('Prompt:') && (
-                <Badge variant="outline" className="text-xs">
-                  <BookOpen className="w-3 h-3 mr-1" />
-                  Prompt-Based
+          <div className="flex flex-col h-full">
+            <DialogHeader className="px-6 pt-6 pb-2">
+              <DialogTitle className="flex items-center gap-2">
+                {entry?.id ? 'Edit Entry' : 'New Journal Entry'}
+                {content.startsWith('Prompt:') && (
+                  <Badge variant="outline" className="text-xs">
+                    <BookOpen className="w-3 h-3 mr-1" />
+                    Prompt-Based
+                  </Badge>
+                )}
+                <Badge variant="secondary" className="ml-auto">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  AI Analysis
                 </Badge>
-              )}
-              <Badge variant="secondary" className="ml-auto">
-                <Sparkles className="w-3 h-3 mr-1" />
-                AI Analysis
-              </Badge>
-            </DialogTitle>
-            <DialogDescription>
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="flex-1 flex flex-col gap-4 py-4 min-h-0">
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Give your entry a title..."
-            />
-            
-            <div className="flex-1 flex gap-6 min-h-0">
-              <div className="flex-1 flex flex-col h-full">
-                          <Textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="What's on your mind? Write freely - AI will analyze your mood automatically when you save."
-                className="w-full flex-1 resize-none"
-                style={{
-                  fontFamily: content.startsWith('Prompt:') ? 'monospace' : 'inherit'
-                }}
+              </DialogTitle>
+              <DialogDescription>
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 flex flex-col gap-4 py-4 min-h-0 px-6 overflow-y-auto">
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Give your entry a title..."
               />
-                
-                {content.length > 20 && !isAnalyzing && !moodAnalysis && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviewMood}
-                    className="mt-2 self-start"
-                    disabled={isAnalyzing}
-                  >
-                    <Brain className="w-4 h-4 mr-2" />
-                    Preview Mood Analysis
-                  </Button>
-                )}
-
-                {isAnalyzing && (
-                  <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Analyzing your mood...
-                  </div>
-                )}
-
-                <MoodPreview />
-              </div>
-              
-              <div className="w-[300px] space-y-4">
-                <div>
-                  <h4 className="font-medium mb-3 text-lg flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-primary" />
-                    AI Mood Analysis
-                  </h4>
-                  <div className="text-sm text-muted-foreground mb-3">
-                    Your mood will be automatically analyzed using AI when you save this entry. This helps track your emotional patterns over time.
-                  </div>
+              <div className="flex-1 flex gap-6 min-h-0">
+                <div className="flex-1 flex flex-col h-full">
+                  <Textarea
+                    id="content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="What's on your mind? Write freely - AI will analyze your mood automatically when you save."
+                    className="w-full flex-1 resize-none"
+                    style={{
+                      fontFamily: content.startsWith('Prompt:') ? 'monospace' : 'inherit'
+                    }}
+                  />
+                  {content.length > 20 && !isAnalyzing && !moodAnalysis && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handlePreviewMood}
+                      className="mt-2 self-start"
+                      disabled={isAnalyzing}
+                    >
+                      <Brain className="w-4 h-4 mr-2" />
+                      Preview Mood Analysis
+                    </Button>
+                  )}
+                  {isAnalyzing && (
+                    <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Analyzing your mood...
+                    </div>
+                  )}
+                  <MoodPreview />
                 </div>
-                
-                <div className="pt-4 border-t border-border">
-                  <h5 className="font-medium mb-2 text-sm">Available Moods</h5>
-                  <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(MOOD_CATEGORIES).map(([mood, meta]) => (
-                      <div
-                        key={mood}
-                        className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 text-xs"
-                      >
-                        <span className="text-base">{meta.emoji}</span>
-                        <span className="capitalize">{mood}</span>
+                <div className="w-[300px] space-y-4 flex flex-col h-full">
+                  <div>
+                    <h4 className="font-medium mb-3 text-lg flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-primary" />
+                      AI Mood Analysis
+                    </h4>
+                    <div className="text-sm text-muted-foreground mb-3">
+                      Your mood will be automatically analyzed using AI when you save this entry. This helps track your emotional patterns over time.
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-border flex flex-col">
+                    <h5 className="font-medium mb-2 text-sm">Available Moods</h5>
+                    <div className="relative">
+                      <div id="mood-scroll-grid" className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-2" style={{ scrollbarGutter: 'stable' }}>
+                        {Object.entries(MOOD_CATEGORIES).map(([mood, meta]) => (
+                          <div
+                            key={mood}
+                            className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 text-xs"
+                          >
+                            <span className="text-base">{meta.emoji}</span>
+                            <span className="capitalize">{mood}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                      {/* Scroll indicator icon, only show if scrollable */}
+                      <ScrollIndicator gridId="mood-scroll-grid" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          
-          <DialogFooter className="flex justify-between w-full mt-auto">
-              {entry?.id && (
-                  <Button variant="destructive" onClick={handleDelete} disabled={isSaving}>
-                      <Trash2 className="mr-2 h-4 w-4" /> Delete
-                  </Button>
-              )}
-              <div className="flex-grow" />
-              <Button onClick={handleSave} disabled={isSaving || !title.trim() || !content.trim()} size="lg">
-                {isSaving ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
-                {isSaving ? 'Saving & Analyzing...' : 'Save Entry'}
+          {/* Footer always at the bottom */}
+          <DialogFooter className="flex justify-between w-full bg-background px-6 py-4 border-t border-border">
+            {entry?.id && (
+              <Button variant="destructive" onClick={handleDelete} disabled={isSaving}>
+                <Trash2 className="mr-2 h-4 w-4" /> Delete
               </Button>
+            )}
+            <div className="flex-grow" />
+            <Button onClick={handleSave} disabled={isSaving || !title.trim() || !content.trim()} size="lg">
+              {isSaving ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {isSaving ? 'Saving & Analyzing...' : 'Save Entry'}
+            </Button>
           </DialogFooter>
+        </div>
         </DialogContent>
       </Dialog>
     );
@@ -355,3 +354,27 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
 };
 
 export default JournalEntryEditor; 
+
+// Add this helper component at the bottom of the file
+const ScrollIndicator: React.FC<{ gridId: string }> = ({ gridId }) => {
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    const checkScroll = () => {
+      setShow(grid.scrollHeight > grid.clientHeight && grid.scrollTop + grid.clientHeight < grid.scrollHeight - 4);
+    };
+    checkScroll();
+    grid.addEventListener('scroll', checkScroll);
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      grid.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [gridId]);
+  return show ? (
+    <div className="absolute left-0 right-0 flex justify-center pointer-events-none -bottom-4">
+      <ChevronDown className="h-5 w-5 text-muted-foreground animate-bounce" />
+    </div>
+  ) : null;
+}; 
