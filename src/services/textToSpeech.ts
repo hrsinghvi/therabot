@@ -251,6 +251,23 @@ export class ElevenLabsTTSProvider implements TTSProvider {
     this.apiKey = apiKey;
   }
 
+  /**
+   * Fetches the list of available voices from ElevenLabs
+   */
+  async fetchVoices(): Promise<any[]> {
+    const response = await fetch('https://api.elevenlabs.io/v1/voices', {
+      headers: {
+        'xi-api-key': this.apiKey,
+        'Accept': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch ElevenLabs voices: ' + response.statusText);
+    }
+    const data = await response.json();
+    return data.voices || [];
+  }
+
   async synthesize(text: string, config?: TTSConfig): Promise<TTSResult> {
     try {
       console.log('ElevenLabs TTS: Starting synthesis for text length:', text.length);
@@ -366,8 +383,10 @@ export class TTSService {
 }
 
 // Default export - create based on environment variables
-const TTS_PROVIDER = import.meta.env.VITE_TTS_PROVIDER || 'mock';
-const TTS_API_KEY = import.meta.env.VITE_TTS_API_KEY;
+
+// Type assertion to 'any' to avoid TS error for 'env' on ImportMeta
+const TTS_PROVIDER = (import.meta as any).env.VITE_TTS_PROVIDER || 'mock';
+const TTS_API_KEY = (import.meta as any).env.VITE_TTS_API_KEY;
 
 console.log('TTS Configuration:', { 
   provider: TTS_PROVIDER, 

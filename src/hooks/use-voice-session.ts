@@ -14,6 +14,7 @@ const useVoiceSession = () => {
   const [transcript, setTranscript] = useState<string>('');
   const [conversationHistory, setConversationHistory] = useState<ConversationTurn[]>([]);
   const [error, setError] = useState<string>('');
+  const [ttsVoice, setTTSVoice] = useState<string>('EXAVITQu4vr4xnSDxMaL');
   
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const chatSessionRef = useRef<ReturnType<typeof getChatSession> | null>(null);
@@ -48,7 +49,7 @@ const useVoiceSession = () => {
       
       // Use ElevenLabs (or configured TTS) instead of Web Speech API
       try {
-        const ttsResult = await ttsService.synthesize(processedResponse, {});
+        const ttsResult = await ttsService.synthesize(processedResponse, { voice: ttsVoice });
         const audio = new Audio();
         
         // Better error handling for Vercel deployment
@@ -85,7 +86,7 @@ const useVoiceSession = () => {
       setError("Failed to get AI response. Please try again.");
       setSessionState('error');
     }
-  }, [conversationHistory]);
+  }, [conversationHistory, ttsVoice]);
 
   // Initialize speech recognition once
   useEffect(() => {
@@ -207,7 +208,8 @@ const useVoiceSession = () => {
     conversationHistory, 
     error,
     toggleListening, 
-    endSession 
+    endSession,
+    setTTSVoice
   };
 };
 
