@@ -39,7 +39,7 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
         setContent(entry.content || '');
       } else {
         // New entry - check if it's a prompt-based entry
-        if (entry && (entry as any)._isPromptBased) {
+        if (entry && entry._isPromptBased) {
           setTitle(entry.title || '');
           setContent(entry.content || '');
         } else {
@@ -91,18 +91,36 @@ const JournalEntryEditor: React.FC<JournalEntryEditorProps> = ({ entry, isOpen, 
       // Trigger mood analysis
       try {
         console.log('Triggering mood analysis for entry:', journalEntry.id, 'with duration:', durationMinutes);
-        await moodOrchestrator.handleRealtimeMoodUpdate(
+        console.log('Entry content length:', journalEntry.content.length);
+        console.log('MoodOrchestrator available:', !!moodOrchestrator);
+        
+        const result = await moodOrchestrator.handleRealtimeMoodUpdate(
           'journal',
           journalEntry.id,
           journalEntry.content,
           undefined,
           durationMinutes
         );
-        console.log('Mood analysis complete.');
+        
+        console.log('Mood analysis complete:', result);
+        console.log('Analysis created:', result.analysis?.id);
+        console.log('Today summary updated:', result.todaysSummary?.primary_mood);
       } catch (analysisError) {
-        console.error('Mood analysis failed:', analysisError);
-        // Non-critical error, so we don't block the user
-        // Maybe show a toast notification in a real app
+        console.error('Mood analysis failed - Full error:', analysisError);
+        console.error('Error type:', typeof analysisError);
+        console.error('Error message:', analysisError?.message);
+        console.error('Error stack:', analysisError?.stack);
+        
+        // Try to get more details about what went wrong
+        if (analysisError?.message?.includes('API')) {
+          console.error('This appears to be an API-related error');
+        }
+        if (analysisError?.message?.includes('auth')) {
+          console.error('This appears to be an authentication error');
+        }
+        
+        // Show user-friendly error message
+        alert(`Mood analysis failed: ${analysisError?.message || 'Unknown error'}. Your entry was saved successfully, but mood analysis needs to be retried.`);
       }
 
       // Reset form state

@@ -35,6 +35,7 @@ export interface JournalEntry {
   content: string;
   mood?: string;
   ai_analysis?: string;
+  _isPromptBased?: boolean; // Custom flag for prompt-based entries
 }
 
 export interface DailyCheckin {

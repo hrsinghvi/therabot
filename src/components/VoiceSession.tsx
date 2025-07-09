@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import useVoiceSession from '../hooks/use-voice-session';
 import { Button } from './ui/button';
@@ -7,10 +7,47 @@ import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { Mic, MicOff, BrainCircuit, Bot, User, CircleStop, AlertCircle, Sparkles } from 'lucide-react';
 import { moodOrchestrator } from '@/services/mood-orchestrator';
+import { ttsService } from '@/services/textToSpeech';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from './ui/select';
+
+// Helper type guard
+function isElevenLabsProvider(provider: any): provider is { fetchVoices: () => Promise<any[]> } {
+  return typeof provider.fetchVoices === 'function';
+}
 
 const VoiceSession = () => {
-  const { sessionState, transcript, conversationHistory, error, toggleListening, endSession } = useVoiceSession();
+  const { sessionState, transcript, conversationHistory, error, toggleListening, endSession, setTTSVoice } = useVoiceSession();
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  const [voices, setVoices] = useState<any[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<string>('EXAVITQu4vr4xnSDxMaL');
+
+  useEffect(() => {
+    // Only fetch voices if using ElevenLabs
+    const provider = (ttsService as any).provider;
+    if (isElevenLabsProvider(provider)) {
+      provider.fetchVoices().then((voices: any[]) => {
+        setVoices(voices);
+        if (voices.length > 0) {
+          setSelectedVoice(voices[0].voice_id);
+        }
+      }).catch((err: any) => {
+        console.error('Failed to fetch ElevenLabs voices:', err);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // Optionally, update the TTS voice in the session hook if supported
+    if (typeof setTTSVoice === 'function') {
+      setTTSVoice(selectedVoice);
+    }
+  }, [selectedVoice, setTTSVoice]);
 
   const latestAiResponse = conversationHistory.filter(turn => turn.speaker === 'ai').pop()?.text;
 
@@ -175,6 +212,24 @@ const VoiceSession = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Voice Selection */}
+      <div className="flex justify-center mb-2">
+        {voices.length > 0 && (
+          <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+            <SelectTrigger className="w-64">
+              <SelectValue placeholder="Select a voice" />
+            </SelectTrigger>
+            <SelectContent>
+              {voices.map((voice: any) => (
+                <SelectItem key={voice.voice_id} value={voice.voice_id}>
+                  {voice.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Control Panel */}

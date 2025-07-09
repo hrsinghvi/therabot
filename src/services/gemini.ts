@@ -150,10 +150,52 @@ export async function analyzeMoodFromText(
     
     const analysis = JSON.parse(jsonMatch[0]);
     
+    // Define allowed database mood values
+    const allowedMoods = [
+      'happy', 'peaceful', 'excited', 'sad', 'anxious', 'frustrated', 'neutral',
+      'bored', 'confused', 'disgusted', 'determined', 'embarrassed', 'curious',
+      'burnt_out', 'indecisive', 'skeptical', 'guarded', 'mad'
+    ];
+
+    // Validate and map primary mood
+    let primaryMood = 'neutral';
+    if (analysis.primaryMood && allowedMoods.includes(analysis.primaryMood)) {
+      primaryMood = analysis.primaryMood;
+    } else if (analysis.primaryMood) {
+      // Try to map common variations
+      const moodMappings = {
+        'angry': 'mad',
+        'rage': 'mad', 
+        'furious': 'mad',
+        'enraged': 'mad',
+        'annoyed': 'frustrated',
+        'irritated': 'frustrated',
+        'upset': 'sad',
+        'depressed': 'sad',
+        'worried': 'anxious',
+        'stressed': 'anxious',
+        'calm': 'peaceful',
+        'relaxed': 'peaceful',
+        'joyful': 'happy',
+        'content': 'happy',
+        'tired': 'burnt_out',
+        'exhausted': 'burnt_out'
+      };
+      primaryMood = moodMappings[analysis.primaryMood.toLowerCase()] || 'neutral';
+    }
+
+    // Validate secondary mood if present
+    let secondaryMood = undefined;
+    if (analysis.secondaryMood) {
+      if (allowedMoods.includes(analysis.secondaryMood)) {
+        secondaryMood = analysis.secondaryMood;
+      }
+    }
+
     // Validate and ensure required fields
     const validatedAnalysis: MoodAnalysis = {
-      primaryMood: MOOD_CATEGORIES[analysis.primaryMood as MoodType] ? analysis.primaryMood : 'neutral',
-      secondaryMood: analysis.secondaryMood && MOOD_CATEGORIES[analysis.secondaryMood as MoodType] ? analysis.secondaryMood : undefined,
+      primaryMood: primaryMood as MoodType,
+      secondaryMood: secondaryMood as MoodType | undefined,
       intensity: Math.max(1, Math.min(10, Number(analysis.intensity) || 5)),
       confidence: Math.max(0, Math.min(1, Number(analysis.confidence) || 0.5)),
       reasoning: analysis.reasoning || "Mood analysis completed",

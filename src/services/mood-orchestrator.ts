@@ -1,5 +1,5 @@
 import { analyzeMoodFromText, combineMoodAnalyses, type MoodAnalysis } from './gemini';
-import { moodAnalysisService, dailyMoodService, type MoodAnalysisEntry } from './supabase';
+import { moodAnalysisService, dailyMoodService, journalService, type MoodAnalysisEntry } from './supabase';
 
 /**
  * Central service for mood analysis orchestration
@@ -21,6 +21,74 @@ export class MoodOrchestrator {
     async analyzeChatMessage(messageId: string, content: string, duration?: number): Promise<MoodAnalysisEntry> {
         const analysis = await analyzeMoodFromText(content, 'chat');
         return this.saveAnalysis(analysis, messageId, content, duration);
+    }
+
+    /**
+     * Analyzes mood from voice session and stores results
+     */
+    async analyzeVoiceSession(sessionId: string, content: string, duration?: number): Promise<MoodAnalysisEntry> {
+        const analysis = await analyzeMoodFromText(content, 'voice');
+        return this.saveAnalysis(analysis, sessionId, content, duration);
+    }
+
+    /**
+     * Process unanalyzed journal entries retroactively
+     */
+    async processUnanalyzedJournalEntries(): Promise<{
+        processed: number;
+        errors: string[];
+    }> {
+        console.log('Starting retroactive journal analysis...');
+        
+        try {
+            // Get all journal entries
+            const journalEntries = await journalService.list();
+            console.log(`Found ${journalEntries.length} journal entries`);
+            
+            // Get all existing mood analyses for journal entries
+            const existingAnalyses = await moodAnalysisService.list(1000);
+            const analyzedEntryIds = new Set(
+                existingAnalyses
+                    .filter(a => a.source === 'journal')
+                    .map(a => a.source_id)
+            );
+            
+            // Find unanalyzed entries
+            const unanalyzedEntries = journalEntries.filter(entry => 
+                !analyzedEntryIds.has(entry.id) && 
+                entry.content && 
+                entry.content.trim().length > 10
+            );
+            
+            console.log(`Found ${unanalyzedEntries.length} unanalyzed journal entries`);
+            
+            const errors: string[] = [];
+            let processed = 0;
+            
+            // Process each unanalyzed entry
+            for (const entry of unanalyzedEntries) {
+                try {
+                    console.log(`Processing journal entry: ${entry.id}`);
+                    await this.analyzeJournalEntry(entry.id, entry.content);
+                    processed++;
+                    console.log(`Successfully processed entry ${entry.id}`);
+                    
+                    // Add a small delay to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                } catch (error) {
+                    const errorMsg = `Failed to process entry ${entry.id}: ${error.message}`;
+                    console.error(errorMsg);
+                    errors.push(errorMsg);
+                }
+            }
+            
+            console.log(`Retroactive analysis complete. Processed: ${processed}, Errors: ${errors.length}`);
+            
+            return { processed, errors };
+        } catch (error) {
+            console.error('Error in retroactive analysis:', error);
+            throw error;
+        }
     }
 
     /**
@@ -152,7 +220,7 @@ export class MoodOrchestrator {
      * Handles real-time mood updates (called after any user interaction)
      */
     async handleRealtimeMoodUpdate(
-      sourceType: 'journal' | 'chat',
+      sourceType: 'journal' | 'chat' | 'voice',
       sourceId: string,
       content: string,
       context?: string,
@@ -169,6 +237,9 @@ export class MoodOrchestrator {
           break;
         case 'chat':
           analysis = await this.analyzeChatMessage(sourceId, content, duration);
+          break;
+        case 'voice':
+          analysis = await this.analyzeVoiceSession(sourceId, content, duration);
           break;
         default:
           throw new Error('Unsupported source type');

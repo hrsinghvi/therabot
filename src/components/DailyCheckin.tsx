@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { dailyCheckinService } from "@/services/supabase";
+import { moodOrchestrator } from "@/services/mood-orchestrator";
 
 interface DailyCheckinProps {
   onBack: () => void;
@@ -27,10 +28,26 @@ const DailyCheckin = ({ onBack }: DailyCheckinProps) => {
     if (!selectedMood) return;
     
     try {
-      await dailyCheckinService.create({
+      const checkin = await dailyCheckinService.create({
         mood: selectedMood,
         reflection: reflection
       });
+
+      // Trigger mood analysis if there's reflection text
+      if (reflection.trim()) {
+        try {
+          await moodOrchestrator.handleRealtimeMoodUpdate(
+            'journal', // Use journal type since checkin reflections are similar
+            checkin.id,
+            reflection,
+            `Daily checkin: feeling ${selectedMood}`
+          );
+        } catch (analysisError) {
+          console.error('Error analyzing checkin mood:', analysisError);
+          // Don't fail the checkin if mood analysis fails
+        }
+      }
+
       setSubmitted(true);
     } catch (error) {
         console.error("Error creating daily checkin:", error);
