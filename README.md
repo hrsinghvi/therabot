@@ -1,13 +1,10 @@
 # TheraBot - AI Mental Health Companion (Submission for Code4Hope)
 
 <div align="center">
-  **A comprehensive mental health and wellness companion powered by AI**
+  **A comprehensive mental health and wellness companion powered by AI. Built with with React, TypeScript, Vite, Tailwind, Supabase/PostgreSQL, Gemini API, ElevenLabs, Web Speech API, & Vercel
+**
 </div>
 
-<div align="center">
-</div>
-
-Built with with React, TypeScript, Vite, Tailwind, Supabase/PostgreSQL, Gemini API, ElevenLabs, Web Speech API, & Vercel
 
 ## Founders
 
