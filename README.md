@@ -4,6 +4,8 @@
   **A comprehensive mental health and wellness companion powered by AI**
 </div>
 
+
+
 Built with with React, TypeScript, Vite, Tailwind, Supabase/PostgreSQL, Gemini API, ElevenLabs, Web Speech API, & Vercel
 
 ## Founders
