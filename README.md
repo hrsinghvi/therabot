@@ -9,7 +9,7 @@
 ## Founders
 
 - Hritvik Singhvi - Dougherty Valley High School - 06/30/2025
-- Vedo Bhomik - Dougherty Valley High School - 06/30/2025
+- Vedo Bhowmik - Dougherty Valley High School - 06/30/2025
 - Varenya Garg - Dougherty Valley High School - 06/30/2025
 - Rijul Rajput - Dougherty Valley High School - 06/30/2025
 
